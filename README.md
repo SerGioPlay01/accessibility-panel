@@ -6,7 +6,7 @@
 
 ## Демо
 
-<div class="sp-embed-player" data-id="cT6VlVnDkdj"><script src="https://go.screenpal.com/player/appearance/cT6VlVnDkdj"></script><iframe width="100%" height="100%" style="border:0;" scrolling="no" src="https://go.screenpal.com/player/cT6VlVnDkdj?width=100%&height=100%&ff=1&title=0" allowfullscreen="true"></iframe></div>
+[](https://go.screenpal.com/watch/cT6VlVnDkdj)
 
 ## ✨ Основные возможности
 
@@ -558,4 +558,5 @@ SOFTWARE.
 
 
 </div>
+
 
