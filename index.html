@@ -1,0 +1,502 @@
+<!--
+  Универсальная панель доступности v3.2
+  Автор: SerGio Play | https://sergioplay-dev.vercel.app/
+  Лицензия: MIT License
+  
+  Copyright (c) 2025 SerGio Play
+  
+  Permission is hereby granted, free of charge, to any person obtaining a copy
+  of this software and associated documentation files (the "Software"), to deal
+  in the Software without restriction, including without limitation the rights
+  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+  copies of the Software, and to permit persons to whom the Software is
+  furnished to do so, subject to the following conditions:
+  
+  The above copyright notice and this permission notice shall be included in all
+  copies or substantial portions of the Software.
+  
+  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+  SOFTWARE.
+-->
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <meta name="description" content="Универсальная панель доступности с функциями озвучки и адаптивным дизайном">
+  <meta name="theme-color" content="#2c5aa0">
+  <link rel="stylesheet" href="/accessibility.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <title>Панель доступности - Улучшенная версия</title>
+</head>
+
+<body>
+
+
+
+  <!-- Плавающая кнопка -->
+  <button class="floating-accessibility-btn" aria-label="Панель доступности">♿</button>
+
+  <!-- Панель -->
+  <div id="accessibilityPanel" class="accessibility-panel" role="dialog" aria-labelledby="accessibility-title"
+    aria-modal="true" aria-describedby="accessibility-description">
+    <div class="accessibility-header">
+      <h3 id="accessibility-title">Панель доступности</h3>
+      <button class="close-panel" aria-label="Закрыть панель доступности"></button>
+    </div>
+    <div id="accessibility-description" class="sr-only">
+      Настройте параметры доступности для комфортного использования сайта
+    </div>
+
+    <div class="accessibility-content">
+      <!-- Размер текста -->
+      <div class="accessibility-group">
+        <h4>📝 Размер текста</h4>
+        <label>
+          Размер текста (80% – 200%)
+          <div class="slider-container">
+            <input type="range" id="textSizeSlider" min="0.8" max="2.0" step="0.1" value="1.0">
+            <span class="slider-value">100%</span>
+          </div>
+        </label>
+      </div>
+
+      <!-- Цветовые схемы -->
+      <div class="accessibility-group">
+        <h4>🎨 Цветовая схема</h4>
+        <div class="color-scheme-grid">
+          <button class="contrast-btn" data-contrast="normal">🌟 Обычная</button>
+          <button class="contrast-btn" data-contrast="high">⚫ Контраст</button>
+          <button class="contrast-btn" data-contrast="dark">🌙 Тёмная</button>
+          <button class="contrast-btn" data-contrast="inverted">🔄 Инверсия</button>
+          <button class="contrast-btn" data-contrast="sepia">📜 Сепия</button>
+          <button class="contrast-btn" data-contrast="blue-light">💙 Синий свет</button>
+          <button class="contrast-btn" data-contrast="green-calm">🌿 Зелёный</button>
+        </div>
+      </div>
+
+      <!-- Интервалы и отступы -->
+      <div class="accessibility-group">
+        <h4>📏 Интервалы текста</h4>
+        <label>
+          Межстрочный интервал
+          <div class="slider-container">
+            <input type="range" id="lineHeightSlider" min="1.0" max="2.5" step="0.1" value="1.5">
+            <span class="slider-value">1.5</span>
+          </div>
+        </label>
+        <label>
+          Межбуквенный интервал
+          <div class="slider-container">
+            <input type="range" id="letterSpacingSlider" min="0" max="5" step="0.5" value="0">
+            <span class="slider-value">0px</span>
+          </div>
+        </label>
+        <label>
+          Отступы между словами
+          <div class="slider-container">
+            <input type="range" id="wordSpacingSlider" min="0" max="10" step="1" value="0">
+            <span class="slider-value">0px</span>
+          </div>
+        </label>
+      </div>
+
+      <!-- Визуальные улучшения -->
+      <div class="accessibility-group">
+        <h4>👁️ Визуальные настройки</h4>
+        <label class="toggle-label">
+          Подчеркивание ссылок
+          <input type="checkbox" id="underlineLinksToggle" class="ios-toggle">
+          <span class="toggle-slider"></span>
+        </label>
+        <label class="toggle-label">
+          Выделение заголовков
+          <input type="checkbox" id="highlightHeadingsToggle" class="ios-toggle">
+          <span class="toggle-slider"></span>
+        </label>
+        <label class="toggle-label">
+          Выделение ссылок
+          <input type="checkbox" id="highlightLinksToggle" class="ios-toggle">
+          <span class="toggle-slider"></span>
+        </label>
+        <label>
+          Размер курсора
+          <div class="slider-container">
+            <input type="range" id="cursorSizeSlider" min="1" max="3" step="1" value="1">
+            <span class="slider-value">Обычный</span>
+          </div>
+        </label>
+      </div>
+
+      <!-- Анимации и движение -->
+      <div class="accessibility-group">
+        <h4>⚡ Анимации и эффекты</h4>
+        <label>
+          Скорость анимаций
+          <div class="slider-container">
+            <input type="range" id="animationSpeedSlider" min="0" max="2" step="0.5" value="1">
+            <span class="slider-value">Обычная</span>
+          </div>
+        </label>
+        <label>
+          Эффект фокуса
+          <div class="slider-container">
+            <input type="range" id="focusEffectSlider" min="0" max="2" step="1" value="1">
+            <span class="slider-value">Обычный</span>
+          </div>
+        </label>
+        <label class="toggle-label">
+          Плавность прокрутки
+          <input type="checkbox" id="scrollBehaviorToggle" class="ios-toggle">
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+
+      <!-- Озвучка и звук -->
+      <div class="accessibility-group">
+        <h4>🔊 Озвучка и звук</h4>
+        <label class="toggle-label">
+          Линейка чтения с озвучкой
+          <input type="checkbox" id="readingLineToggle" class="ios-toggle">
+          <span class="toggle-slider"></span>
+        </label>
+        <label class="toggle-label">
+          Озвучка при наведении
+          <input type="checkbox" id="hoverSpeechToggle" class="ios-toggle">
+          <span class="toggle-slider"></span>
+        </label>
+        <label>
+          Скорость озвучки
+          <div class="slider-container">
+            <input type="range" id="speechRateSlider" min="0.5" max="2.0" step="0.1" value="1.0">
+            <span class="slider-value">1.0x</span>
+          </div>
+        </label>
+        <label>
+          Громкость озвучки
+          <div class="slider-container">
+            <input type="range" id="speechVolumeSlider" min="0.1" max="1.0" step="0.1" value="0.8">
+            <span class="slider-value">80%</span>
+          </div>
+        </label>
+      </div>
+
+      <!-- Специальные возможности -->
+      <div class="accessibility-group">
+        <h4>♿ Специальные возможности</h4>
+        <label class="toggle-label">
+          Режим без изображений
+          <input type="checkbox" id="hideImagesToggle" class="ios-toggle">
+          <span class="toggle-slider"></span>
+        </label>
+        <label class="toggle-label">
+          Клавиатурная навигация
+          <input type="checkbox" id="keyboardNavToggle" class="ios-toggle">
+          <span class="toggle-slider"></span>
+        </label>
+        <label class="toggle-label">
+          Режим дислексии
+          <input type="checkbox" id="dyslexiaToggle" class="ios-toggle">
+          <span class="toggle-slider"></span>
+        </label>
+
+      </div>
+
+      <!-- Управление профилями -->
+      <div class="accessibility-group">
+        <h4>💾 Управление профилями</h4>
+        <div class="profile-controls">
+          <button class="save-profile-btn">💾 Сохранить профиль</button>
+          <button class="load-profile-btn">📂 Загрузить профиль</button>
+          <button class="reset-btn">🔄 Сбросить настройки</button>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Водяной знак автора -->
+    <div style="margin-top: auto; padding: 16px 20px; border-top: 1px solid rgba(0, 0, 0, 0.06); background: rgba(248, 249, 250, 0.8);">
+      <div style="text-align: center;">
+        <p style="margin: 0; font-size: 11px; color: #6c757d; line-height: 1.4;">
+          Создано с ❤️ by <a href="https://sergioplay-dev.vercel.app/" target="_blank" rel="noopener noreferrer" style="color: #4A90E2; text-decoration: none; font-weight: 600;">SerGio Play</a>
+        </p>
+        <p style="margin: 4px 0 0 0; font-size: 10px; color: #adb5bd;">
+          Панель доступности v3.2 • MIT License
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Оверлей -->
+  <div id="accessibilityOverlay" class="accessibility-overlay"></div>
+
+  <!-- Сообщения для скринридеров -->
+  <div id="sr-announcements" style="position:absolute;left:-9999px;" aria-live="polite" aria-atomic="true"></div>
+
+  <!-- ======= ДЕМО-КОНТЕНТ ======= -->
+  <div class="page-content">
+    <!-- Кнопка в хедере -->
+    <header
+      style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; margin-bottom: 30px;">
+      <nav style="display: flex; justify-content: space-between; align-items: center;">
+        <h1 style="margin: 0; font-size: 1.8rem;">📰 Новостной портал</h1>
+        <button class="accessibility-toggle" aria-label="Открыть панель доступности"
+          style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 10px 15px; border-radius: 8px; cursor: pointer;">♿
+          Панель доступности</button>
+      </nav>
+    </header>
+
+    <main style="max-width: 1200px; margin: 0 auto; padding: 0 20px;">
+
+      <!-- Главная новость -->
+      <article
+        style="background: #f8f9fa; padding: 30px; border-radius: 12px; margin-bottom: 30px; border-left: 5px solid #007bff;">
+        <h1 style="color: #2c3e50; margin-bottom: 15px; font-size: 2.2rem;">🚀 Революция в области доступности: новые
+          технологии помогают миллионам людей</h1>
+        <p style="color: #6c757d; margin-bottom: 15px; font-style: italic;">
+          <time datetime="2024-12-19">19 декабря 2024</time> • Автор: <strong>Анна Петрова</strong> • Категория: <a
+            href="#" style="color: #007bff;">Технологии</a>
+        </p>
+        <p style="font-size: 1.1rem; line-height: 1.7; margin-bottom: 20px;">
+          Современные технологии открывают новые горизонты для людей с ограниченными возможностями.
+          <strong>Искусственный интеллект</strong>, <em>голосовые помощники</em> и <mark>адаптивные интерфейсы</mark>
+          становятся мостом между цифровым миром и потребностями каждого человека.
+        </p>
+        <p style="line-height: 1.7;">
+          По данным <abbr title="Всемирная организация здравоохранения">ВОЗ</abbr>, более 1 миллиарда людей в мире живут
+          с той или иной формой инвалидности.
+          Новые решения в области веб-доступности позволяют этим людям полноценно участвовать в цифровой жизни общества.
+        </p>
+        <img src="https://via.placeholder.com/600x300/4a90e2/ffffff?text=Технологии+доступности"
+          alt="Современные технологии доступности: человек использует голосовое управление компьютером"
+          style="width: 100%; height: 300px; object-fit: cover; border-radius: 8px; margin: 20px 0;">
+      </article>
+
+      <!-- Раздел новостей -->
+      <section style="margin-bottom: 40px;">
+        <h2 style="color: #2c3e50; border-bottom: 3px solid #e74c3c; padding-bottom: 10px; margin-bottom: 25px;">📈
+          Последние новости</h2>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 25px;">
+          <article
+            style="border: 1px solid #dee2e6; border-radius: 10px; overflow: hidden; transition: transform 0.2s;">
+            <img src="https://via.placeholder.com/400x200/28a745/ffffff?text=Образование"
+              alt="Студенты с ограниченными возможностями изучают программирование"
+              style="width: 100%; height: 200px; object-fit: cover;">
+            <div style="padding: 20px;">
+              <h3 style="color: #495057; margin-bottom: 10px;">🎓 Инклюзивное образование в IT</h3>
+              <p style="color: #6c757d; line-height: 1.6; margin-bottom: 15px;">
+                Ведущие университеты запускают специальные программы для студентов с инвалидностью.
+                Новые методики обучения программированию адаптированы для людей с различными потребностями.
+              </p>
+              <a href="#" style="color: #007bff; text-decoration: none; font-weight: 500;">Читать далее →</a>
+            </div>
+          </article>
+
+          <article style="border: 1px solid #dee2e6; border-radius: 10px; overflow: hidden;">
+            <img src="https://via.placeholder.com/400x200/6f42c1/ffffff?text=Мобильные+приложения"
+              alt="Мобильное приложение с функциями доступности" style="width: 100%; height: 200px; object-fit: cover;">
+            <div style="padding: 20px;">
+              <h3 style="color: #495057; margin-bottom: 10px;">📱 Мобильные приложения становятся доступнее</h3>
+              <p style="color: #6c757d; line-height: 1.6; margin-bottom: 15px;">
+                Apple и Google представили новые инструменты для разработчиков, которые автоматически
+                проверяют приложения на соответствие стандартам доступности.
+              </p>
+              <a href="#" style="color: #007bff; text-decoration: none; font-weight: 500;">Читать далее →</a>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <!-- Литературный раздел -->
+      <section
+        style="background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%); padding: 30px; border-radius: 15px; margin-bottom: 40px;">
+        <h2 style="color: #8b4513; text-align: center; margin-bottom: 30px; font-size: 2rem;">📚 Литературная страничка
+        </h2>
+
+        <!-- Рассказ -->
+        <article style="background: rgba(255,255,255,0.8); padding: 25px; border-radius: 12px; margin-bottom: 30px;">
+          <h3 style="color: #2c3e50; margin-bottom: 15px; text-align: center;">🌟 Рассказ: "Звуки цвета"</h3>
+          <p style="font-style: italic; text-align: center; color: #6c757d; margin-bottom: 20px;">Автор: Михаил Светлов
+          </p>
+
+          <p style="line-height: 1.8; margin-bottom: 15px; text-indent: 30px;">
+            Анна всегда <strong>слышала цвета</strong>. Красный звучал как <em>скрипка на высоких нотах</em>,
+            синий — как <mark>глубокое дыхание океана</mark>. Когда она впервые села за компьютер,
+            экран заговорил с ней симфонией оттенков.
+          </p>
+
+          <p style="line-height: 1.8; margin-bottom: 15px; text-indent: 30px;">
+            — Мама, а почему этот сайт молчит? — спросила она, указывая на страницу без альтернативного текста для
+            изображений.
+          </p>
+
+          <p style="line-height: 1.8; margin-bottom: 15px; text-indent: 30px;">
+            Мать улыбнулась. Её дочь не просто <u>адаптировалась к миру</u> — она <strong>учила мир адаптироваться к
+              ней</strong>.
+            Через несколько лет Анна стала ведущим специалистом по веб-доступности,
+            помогая сайтам <q>заговорить</q> для миллионов людей.
+          </p>
+
+          <blockquote
+            style="border-left: 4px solid #e74c3c; padding-left: 20px; margin: 20px 0; font-style: italic; color: #495057;">
+            "Доступность — это не ограничение творчества, а его расширение.
+            Когда мы создаём для всех, мы создаём лучше для каждого."
+          </blockquote>
+        </article>
+
+        <!-- Стихотворение -->
+        <article style="background: rgba(255,255,255,0.9); padding: 25px; border-radius: 12px;">
+          <h3 style="color: #2c3e50; margin-bottom: 15px; text-align: center;">🎭 Стихотворение: "Мир без барьеров"</h3>
+          <p style="font-style: italic; text-align: center; color: #6c757d; margin-bottom: 25px;">Автор: Елена Радужная
+          </p>
+
+          <div style="text-align: center; line-height: 2; font-size: 1.1rem; color: #2c3e50;">
+            <p>В мире, где <strong>каждый голос слышен</strong>,<br>
+              Где <em>каждый взгляд имеет значение</em>,<br>
+              Технологии становятся <mark>мостом</mark><br>
+              Между мечтой и её воплощением.</p>
+
+            <p style="margin-top: 20px;">Не важно, как ты видишь этот мир —<br>
+              <u>Глазами, пальцами или сердцем</u>,<br>
+              Важно, что мир открыт для всех,<br>
+              И каждый может стать в нём <strong>первым</strong>.
+            </p>
+
+            <p style="margin-top: 20px;">Пусть <abbr title="Искусственный интеллект">ИИ</abbr> читает вслух,<br>
+              Пусть интерфейс подстроится под тебя,<br>
+              Ведь <em>истинная красота технологий</em><br>
+              В том, что они служат <mark>человечности</mark>.</p>
+          </div>
+        </article>
+      </section>
+
+      <!-- Интерактивные элементы -->
+      <section style="margin-bottom: 40px;">
+        <h2 style="color: #2c3e50; border-bottom: 3px solid #28a745; padding-bottom: 10px; margin-bottom: 25px;">🎮
+          Интерактивные элементы</h2>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
+          <div style="background: #e3f2fd; padding: 20px; border-radius: 10px; border: 2px solid #2196f3;">
+            <h3 style="color: #1976d2; margin-bottom: 15px;">📝 Форма обратной связи</h3>
+            <form>
+              <label for="name" style="display: block; margin-bottom: 5px; font-weight: 500;">Ваше имя:</label>
+              <input type="text" id="name" name="name"
+                style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; margin-bottom: 15px;"
+                placeholder="Введите ваше имя">
+
+              <label for="message" style="display: block; margin-bottom: 5px; font-weight: 500;">Сообщение:</label>
+              <textarea id="message" name="message" rows="4"
+                style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; margin-bottom: 15px; resize: vertical;"
+                placeholder="Расскажите о своём опыте использования панели доступности"></textarea>
+
+              <button type="submit"
+                style="background: #2196f3; color: white; border: none; padding: 12px 20px; border-radius: 5px; cursor: pointer; font-weight: 500;">Отправить
+                сообщение</button>
+            </form>
+          </div>
+
+          <div style="background: #f3e5f5; padding: 20px; border-radius: 10px; border: 2px solid #9c27b0;">
+            <h3 style="color: #7b1fa2; margin-bottom: 15px;">🔗 Полезные ссылки</h3>
+            <ul style="list-style-type: none; padding: 0;">
+              <li style="margin-bottom: 10px;">
+                <a href="#" title="Руководство по веб-доступности WCAG 2.1"
+                  style="color: #7b1fa2; text-decoration: none; display: flex; align-items: center; gap: 8px;">
+                  📖 Руководство WCAG 2.1
+                </a>
+              </li>
+              <li style="margin-bottom: 10px;">
+                <a href="#" aria-label="Инструменты для тестирования доступности сайтов"
+                  style="color: #7b1fa2; text-decoration: none; display: flex; align-items: center; gap: 8px;">
+                  🛠️ Инструменты тестирования
+                </a>
+              </li>
+              <li style="margin-bottom: 10px;">
+                <a href="#"
+                  style="color: #7b1fa2; text-decoration: none; display: flex; align-items: center; gap: 8px;">
+                  🎯 Примеры лучших практик
+                </a>
+              </li>
+              <li>
+                <a href="#"
+                  style="color: #7b1fa2; text-decoration: none; display: flex; align-items: center; gap: 8px;">
+                  🌐 Сообщество разработчиков
+                </a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <!-- Цитаты и высказывания -->
+      <section style="background: #f8f9fa; padding: 30px; border-radius: 15px; margin-bottom: 40px;">
+        <h2 style="color: #2c3e50; text-align: center; margin-bottom: 30px;">💭 Мудрые мысли о доступности</h2>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 25px;">
+          <blockquote
+            style="background: white; padding: 25px; border-radius: 10px; border-left: 5px solid #e74c3c; margin: 0; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+            <p style="font-style: italic; font-size: 1.1rem; line-height: 1.6; margin-bottom: 15px; color: #2c3e50;">
+              "Дизайн — это не только то, как что-то выглядит и ощущается.
+              Дизайн — это то, как это работает."
+            </p>
+            <cite style="color: #6c757d; font-weight: 500;">— Стив Джобс</cite>
+          </blockquote>
+
+          <blockquote
+            style="background: white; padding: 25px; border-radius: 10px; border-left: 5px solid #28a745; margin: 0; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+            <p style="font-style: italic; font-size: 1.1rem; line-height: 1.6; margin-bottom: 15px; color: #2c3e50;">
+              "Интернет предназначен для работы для всех людей,
+              независимо от их оборудования, программного обеспечения, языка,
+              местоположения или способностей."
+            </p>
+            <cite style="color: #6c757d; font-weight: 500;">— Тим Бернерс-Ли</cite>
+          </blockquote>
+
+          <blockquote
+            style="background: white; padding: 25px; border-radius: 10px; border-left: 5px solid #007bff; margin: 0; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+            <p style="font-style: italic; font-size: 1.1rem; line-height: 1.6; margin-bottom: 15px; color: #2c3e50;">
+              "Доступность — это не специальная функция.
+              Это фундаментальный аспект хорошего дизайна."
+            </p>
+            <cite style="color: #6c757d; font-weight: 500;">— Джен Симмонс</cite>
+          </blockquote>
+        </div>
+      </section>
+
+      <!-- Заключение -->
+      <footer
+        style="text-align: center; padding: 40px 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 15px; margin-top: 40px;">
+        <h2 style="margin-bottom: 20px; font-size: 1.8rem;">🌟 Спасибо за внимание!</h2>
+        <p
+          style="font-size: 1.1rem; line-height: 1.6; margin-bottom: 20px; max-width: 600px; margin-left: auto; margin-right: auto;">
+          Эта демонстрационная страница показывает, как панель доступности может улучшить
+          взаимодействие с различными типами контента. Попробуйте разные настройки
+          и почувствуйте разницу!
+        </p>
+        <button type="button" onclick="alert('Спасибо за тестирование панели доступности! 🎉')"
+          style="background: rgba(255,255,255,0.2); border: 2px solid white; color: white; padding: 15px 30px; border-radius: 25px; cursor: pointer; font-size: 1.1rem; font-weight: 500; transition: all 0.3s ease;">
+          🎉 Завершить демонстрацию
+        </button>
+      </footer>
+
+    </main>
+  </div>
+
+  <!-- Подключение скрипта панели -->
+  <script src="/accessibility.js"></script>
+  <script>
+    // Дополнительная конфигурация при необходимости
+    document.addEventListener("DOMContentLoaded", () => {
+      // Панель инициализируется автоматически
+      console.log('Панель доступности готова к использованию');
+    });
+  </script>
+
+</body>
+
+</html>
