@@ -2,7 +2,7 @@
 
 Современная и функциональная панель доступности для веб-сайтов с поддержкой множества настроек и адаптивным дизайном.
 
-[![Watch the video](image.png)]([https://youtu.be/vt5fpE0bzSY](https://www.youtube.com/watch?v=oz47SHfmAOA))
+[![Watch the video](image.png)]([https://youtu.be/vt5fpE0bzSY](https://youtu.be/oz47SHfmAOA)
 
 ## ✨ Основные возможности
 
@@ -554,6 +554,7 @@ SOFTWARE.
 
 
 </div>
+
 
 
 
