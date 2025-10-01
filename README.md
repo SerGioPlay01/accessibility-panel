@@ -550,10 +550,11 @@ SOFTWARE.
 
 **Сделано с ❤️ для более доступного интернета**
 
-[🌐 Сайт автора](https://sergioplay-dev.vercel.app/) • [📚 Документация](./docs) • [🐛 Сообщить о проблеме](https://github.com/sergioplay/accessibility-panel/issues)
+[🌐 Сайт автора](https://sergioplay-dev.vercel.app/) • [🐛 Сообщить о проблеме](https://github.com/SerGioPlay01/accessibility-panel/issues)
 
 
 </div>
+
 
 
 
