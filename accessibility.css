@@ -1284,7 +1284,7 @@ input[type=range].dragging::-moz-range-thumb {
 }
 
 .toggle-label.active {
-    background: linear-gradient(135deg, #474747 0%, #d4edda 100%) !important;
+    background: linear-gradient(135deg, #e8f5e8 0%, #d4edda 100%) !important;
     border-color: #28a745 !important;
 }
 
@@ -1392,9 +1392,17 @@ input[type=range]:hover {
 
 /* ==================== СТИЛИ ДЛЯ КОНТЕНТА САЙТА ==================== */
 
-/* Применяются только к .page-content */
+/* ЦВЕТОВЫЕ СХЕМЫ - ИСПРАВЛЕННЫЕ */
 .high-contrast-enabled .page-content {
     filter: contrast(150%) brightness(1.2) !important;
+    background-color: #ffffff !important;
+    color: #000000 !important;
+}
+
+.high-contrast-enabled .page-content *:not(.accessibility-panel):not(.accessibility-panel *):not(.floating-accessibility-btn) {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+    border-color: #000000 !important;
 }
 
 .dark-theme-enabled .page-content {
@@ -1402,9 +1410,9 @@ input[type=range]:hover {
     color: #e0e0e0 !important;
 }
 
-.dark-theme-enabled .page-content * {
-    background-color: inherit;
-    color: inherit;
+.dark-theme-enabled .page-content *:not(.accessibility-panel):not(.accessibility-panel *):not(.floating-accessibility-btn) {
+    background-color: #1a1a1a !important;
+    color: #e0e0e0 !important;
 }
 
 .inverted-colors-enabled .page-content {
@@ -1423,18 +1431,19 @@ input[type=range]:hover {
     filter: hue-rotate(90deg) saturate(0.7) brightness(1.05) !important;
 }
 
-.underline-links-enabled .page-content a {
+/* Визуальные улучшения */
+.underline-links-enabled .page-content a:not(.accessibility-panel a):not(.floating-accessibility-btn) {
     text-decoration: underline !important;
     text-decoration-thickness: 2px !important;
     text-underline-offset: 3px !important;
 }
 
-.enhanced-headings-enabled .page-content h1,
-.enhanced-headings-enabled .page-content h2,
-.enhanced-headings-enabled .page-content h3,
-.enhanced-headings-enabled .page-content h4,
-.enhanced-headings-enabled .page-content h5,
-.enhanced-headings-enabled .page-content h6 {
+.enhanced-headings-enabled .page-content h1:not(.accessibility-panel h1),
+.enhanced-headings-enabled .page-content h2:not(.accessibility-panel h2),
+.enhanced-headings-enabled .page-content h3:not(.accessibility-panel h3),
+.enhanced-headings-enabled .page-content h4:not(.accessibility-panel h4),
+.enhanced-headings-enabled .page-content h5:not(.accessibility-panel h5),
+.enhanced-headings-enabled .page-content h6:not(.accessibility-panel h6) {
     background: linear-gradient(135deg, #fff3cd, #ffeaa7) !important;
     padding: 8px 16px !important;
     border-left: 6px solid #f39c12 !important;
@@ -1443,7 +1452,7 @@ input[type=range]:hover {
     box-shadow: 0 2px 8px rgba(243, 156, 18, 0.2) !important;
 }
 
-.enhanced-links-enabled .page-content a {
+.enhanced-links-enabled .page-content a:not(.accessibility-panel a):not(.floating-accessibility-btn) {
     background: linear-gradient(135deg, #d4edda, #c3e6cb) !important;
     padding: 4px 8px !important;
     border-radius: 6px !important;
@@ -1453,76 +1462,81 @@ input[type=range]:hover {
     transition: all 0.3s ease !important;
 }
 
-.enhanced-links-enabled .page-content a:hover {
+.enhanced-links-enabled .page-content a:not(.accessibility-panel a):not(.floating-accessibility-btn):hover {
     background: linear-gradient(135deg, #28a745, #20c997) !important;
     color: white !important;
     transform: translateY(-1px) !important;
     box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3) !important;
 }
 
-.hide-images-enabled .page-content img,
-.hide-images-enabled .page-content video,
-.hide-images-enabled .page-content iframe {
+.hide-images-enabled .page-content img:not(.accessibility-panel img),
+.hide-images-enabled .page-content video:not(.accessibility-panel video),
+.hide-images-enabled .page-content iframe:not(.accessibility-panel iframe) {
     display: none !important;
 }
 
-.keyboard-navigation-enabled .page-content *:focus {
+/* Навигация и фокус */
+.keyboard-navigation-enabled .page-content *:focus:not(.accessibility-panel *):not(.floating-accessibility-btn) {
     outline: 4px solid #007AFF !important;
     outline-offset: 4px !important;
     box-shadow: 0 0 0 8px rgba(0, 122, 255, 0.3) !important;
     border-radius: 6px !important;
 }
 
-.dyslexia-mode-enabled .page-content {
-    font-family: 'OpenDyslexic', 'Comic Sans MS', cursive !important;
-}
-
-.dyslexia-mode-enabled .page-content * {
-    font-family: inherit !important;
-    letter-spacing: 0.12em !important;
-    word-spacing: 0.16em !important;
-    line-height: 1.6 !important;
-}
-
-.cursor-large-enabled,
-.cursor-large-enabled * {
-    cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><path d="M2 2 L2 28 L10 20 L16 26 L20 22 L14 16 L22 16 Z" fill="white" stroke="black" stroke-width="1"/></svg>') 16 16, auto !important;
-}
-
-.cursor-extra-large-enabled,
-.cursor-extra-large-enabled * {
-    cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48"><path d="M3 3 L3 42 L15 30 L24 39 L30 33 L21 24 L33 24 Z" fill="white" stroke="black" stroke-width="2"/></svg>') 24 24, auto !important;
-}
-
-.animation-disabled-enabled * {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-}
-
-.animation-slow-enabled * {
-    animation-duration: 2s !important;
-    transition-duration: 0.8s !important;
-}
-
-.focus-enhanced-enabled *:focus {
+.focus-enhanced-enabled .page-content *:focus:not(.accessibility-panel *):not(.floating-accessibility-btn) {
     outline: 3px solid #007AFF !important;
     outline-offset: 3px !important;
     box-shadow: 0 0 0 6px rgba(0, 122, 255, 0.3) !important;
 }
 
-.focus-strong-enabled *:focus {
+.focus-strong-enabled .page-content *:focus:not(.accessibility-panel *):not(.floating-accessibility-btn) {
     outline: 5px solid #007AFF !important;
     outline-offset: 5px !important;
     box-shadow: 0 0 0 10px rgba(0, 122, 255, 0.5) !important;
     background-color: rgba(0, 122, 255, 0.1) !important;
 }
 
+/* Шрифты и читаемость */
+.dyslexia-mode-enabled .page-content:not(.accessibility-panel):not(.accessibility-panel *) {
+    font-family: 'Comic Sans MS', 'Arial Rounded MT Bold', cursive !important;
+}
+
+.dyslexia-mode-enabled .page-content *:not(.accessibility-panel):not(.accessibility-panel *):not(.floating-accessibility-btn) {
+    font-family: inherit !important;
+    letter-spacing: 0.12em !important;
+    word-spacing: 0.16em !important;
+    line-height: 1.6 !important;
+}
+
+/* Курсоры */
+.cursor-large-enabled,
+.cursor-large-enabled *:not(.accessibility-panel):not(.accessibility-panel *) {
+    cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32"><path d="M2 2 L2 28 L10 20 L16 26 L20 22 L14 16 L22 16 Z" fill="white" stroke="black" stroke-width="1"/></svg>') 16 16, auto !important;
+}
+
+.cursor-extra-large-enabled,
+.cursor-extra-large-enabled *:not(.accessibility-panel):not(.accessibility-panel *) {
+    cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 48 48"><path d="M3 3 L3 42 L15 30 L24 39 L30 33 L21 24 L33 24 Z" fill="white" stroke="black" stroke-width="2"/></svg>') 24 24, auto !important;
+}
+
+/* Анимации */
+.animation-disabled-enabled *:not(.accessibility-panel):not(.accessibility-panel *) {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+}
+
+.animation-slow-enabled *:not(.accessibility-panel):not(.accessibility-panel *) {
+    animation-duration: 2s !important;
+    transition-duration: 0.8s !important;
+}
+
+/* Плавная прокрутка */
 .smooth-scroll-enabled {
     scroll-behavior: smooth !important;
 }
 
-.smooth-scroll-enabled * {
+.smooth-scroll-enabled *:not(.accessibility-panel):not(.accessibility-panel *) {
     scroll-behavior: smooth !important;
 }
 
@@ -1606,43 +1620,43 @@ input[type=range]:hover {
 /* Темная тема для панели доступности */
 @media (prefers-color-scheme: dark) {
     .accessibility-panel {
-        background: #dadada !important;
+        background: #f8f9fa !important;
         color: #2d2d2d !important;
-        border-right-color: #333 !important;
+        border-right-color: #dee2e6 !important;
     }
 
     .accessibility-group {
-        background: linear-gradient(135deg, #2d2d2d 0%, #252525 100%) !important;
-        border-color: #444 !important;
-        color: #e0e0e0 !important;
+        background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%) !important;
+        border-color: #dee2e6 !important;
+        color: #2d2d2d !important;
     }
 
     .accessibility-group h4 {
-        background: linear-gradient(135deg, #3a3a3a 0%, #333333 100%) !important;
-        color: #ffffff !important;
-        border-bottom-color: #444 !important;
+        background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%) !important;
+        color: #2d2d2d !important;
+        border-bottom-color: #ced4da !important;
     }
 
     .accessibility-group label {
-        background: linear-gradient(135deg, #2d2d2d 0%, #333333 100%) !important;
-        border-color: #444 !important;
-        color: #e0e0e0 !important;
+        background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%) !important;
+        border-color: #dee2e6 !important;
+        color: #2d2d2d !important;
     }
 
     .accessibility-group label:hover {
-        background: linear-gradient(135deg, #3a3a3a 0%, #363636 100%) !important;
+        background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%) !important;
     }
 
     .toggle-label {
-        background: linear-gradient(135deg, #2d2d2d 0%, #333333 100%) !important;
-        border-color: #444 !important;
-        color: #e0e0e0 !important;
+        background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%) !important;
+        border-color: #dee2e6 !important;
+        color: #2d2d2d !important;
     }
 
     .contrast-btn {
-        background: linear-gradient(135deg, #333 0%, #2d2d2d 100%) !important;
-        border-color: #555 !important;
-        color: #e0e0e0 !important;
+        background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%) !important;
+        border-color: #ced4da !important;
+        color: #2d2d2d !important;
     }
 
     .contrast-btn.active {
@@ -1664,4 +1678,73 @@ input[type=range]:hover {
 .cognitive-impairment-mode .accessibility-panel * {
     font-family: 'Comic Sans MS', 'Arial Rounded MT Bold', sans-serif !important;
     line-height: 1.8 !important;
+}
+
+/* ==================== НОВЫЕ СТИЛИ ДЛЯ СВЕТЛОЙ ПАНЕЛИ ==================== */
+
+/* Светлая цветовая схема для панели */
+.accessibility-panel.light-theme {
+    background: #ffffff !important;
+    color: #333333 !important;
+    border-right: 1px solid rgba(0, 0, 0, 0.1) !important;
+}
+
+.accessibility-panel.light-theme .accessibility-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+}
+
+.accessibility-panel.light-theme .accessibility-group {
+    background: #ffffff !important;
+    border: 1px solid #e1e5e9 !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04) !important;
+}
+
+.accessibility-panel.light-theme .accessibility-group:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08) !important;
+    border-color: #667eea !important;
+}
+
+.accessibility-panel.light-theme .accessibility-group h4 {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%) !important;
+    color: #2d3748 !important;
+}
+
+.accessibility-panel.light-theme .accessibility-group label {
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    color: #2d3748 !important;
+}
+
+.accessibility-panel.light-theme .accessibility-group label:hover {
+    background: #f7fafc !important;
+    border-color: #667eea !important;
+}
+
+/* Улучшенная светлая тема для лучшей читаемости */
+.accessibility-panel.light-theme .toggle-label {
+    background: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+}
+
+.accessibility-panel.light-theme .toggle-label:hover {
+    background: #f7fafc !important;
+    border-color: #667eea !important;
+}
+
+.accessibility-panel.light-theme .contrast-btn {
+    background: #ffffff !important;
+    border: 2px solid #e2e8f0 !important;
+    color: #4a5568 !important;
+}
+
+.accessibility-panel.light-theme .contrast-btn:hover {
+    background: #f7fafc !important;
+    border-color: #667eea !important;
+    color: #667eea !important;
+}
+
+.accessibility-panel.light-theme .contrast-btn.active {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    border-color: #667eea !important;
+    color: #ffffff !important;
 }
