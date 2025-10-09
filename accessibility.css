@@ -343,7 +343,7 @@ body.accessibility-panel-open .accessibility-overlay {
     gap: 12px;
     margin-bottom: 12px;
     padding: 14px 16px;
-    background: rgba(248, 249, 250, 0.5);
+    background: rgba(248, 249, 250, 0.9);
     border: 1px solid rgba(0, 0, 0, 0.04);
     border-radius: 12px;
     font-size: 14px;

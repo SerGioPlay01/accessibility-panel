@@ -38,16 +38,18 @@ class AccessibilityPanel {
             textSlider: '#textSizeSlider',
             hideImagesToggle: '#hideImages',
             readingLineToggle: '#readingLine',
-            contentWrapper: 'main' // Элемент, к которому применяются стили
+            contentWrapper: 'main',
+            skipLink: '#skip-to-accessibility'
         }, config);
 
+        // Настройки по умолчанию с улучшенными значениями доступности
         this.settings = {
             customFontSize: 1.0,
             contrast: 'normal',
-            lineHeight: 1.5,
+            lineHeight: 1.6, // Улучшенное значение по умолчанию для читаемости
             letterSpacing: 0,
             wordSpacing: 0,
-            fontFamily: 'inter',
+            fontFamily: 'system-ui', // Системный шрифт для лучшей читаемости
             underlineLinks: 0,
             highlightHeadings: 0,
             highlightLinks: 0,
@@ -62,6 +64,7 @@ class AccessibilityPanel {
             hideImages: 0,
             keyboardNav: 0,
             dyslexia: 0,
+            reducedMotion: 0
         };
 
         this.contentEl = document.querySelector('.page-content') || document.querySelector(this.config.contentWrapper);
@@ -72,30 +75,164 @@ class AccessibilityPanel {
         this.hoverSpeechHandler = null;
         this.hoverLeaveHandler = null;
         this.lastHoverText = '';
+        this.currentUtterance = null;
+        this.isSpeaking = false;
 
+        // Состояние для управления фокусом
+        this.focusManager = {
+            trapElement: null,
+            previousFocus: null,
+            focusableElements: []
+        };
 
         this.init();
     }
 
     init() {
         try {
-            // Проверка поддержки браузера
+            // Проверка поддержки браузера с улучшенной обработкой ошибок
             if (!this.checkBrowserSupport()) {
-                console.warn('Браузер не поддерживает все функции панели доступности');
+                this.showCompatibilityWarning();
+                return;
             }
 
-            // Оптимизированная инициализация
+            // Создание необходимых DOM элементов для доступности
+            this.createAccessibilityElements();
+
             this.bindEvents();
             this.restoreSettings();
             this.optimizePerformance();
-            this.announce('Панель доступности загружена');
+            this.announce('Панель доступности загружена. Используйте Tab для навигации.');
 
             // Добавление индикатора готовности
             document.body.classList.add('accessibility-ready', 'accessibility-enabled');
+
+            // Инициализация ARIA атрибутов
+            this.initializeARIA();
+
         } catch (error) {
-            console.error('Ошибка инициализации:', error);
+            console.error('Ошибка инициализации панели доступности:', error);
             this.announce('Ошибка загрузки панели доступности');
         }
+    }
+
+    createAccessibilityElements() {
+        // Создание элемента для скринридеров
+        if (!document.getElementById('sr-announcements')) {
+            const announcer = document.createElement('div');
+            announcer.id = 'sr-announcements';
+            announcer.className = 'sr-only';
+            announcer.setAttribute('aria-live', 'polite');
+            announcer.setAttribute('aria-atomic', 'true');
+            document.body.appendChild(announcer);
+        }
+
+        // Создание кнопки "пропустить к панели доступности"
+        if (!document.getElementById('skip-to-accessibility')) {
+            const skipLink = document.createElement('a');
+            skipLink.id = 'skip-to-accessibility';
+            skipLink.href = '#accessibilityPanel';
+            skipLink.className = 'skip-link';
+            skipLink.textContent = 'Перейти к панели доступности';
+            document.body.insertBefore(skipLink, document.body.firstChild);
+        }
+    }
+
+    initializeARIA() {
+        const panel = document.querySelector(this.config.panel);
+        if (panel) {
+            panel.setAttribute('role', 'dialog');
+            panel.setAttribute('aria-modal', 'true');
+            panel.setAttribute('aria-label', 'Панель доступности');
+            panel.setAttribute('aria-describedby', 'accessibility-panel-description');
+        }
+
+        // Добавление описания для скринридеров
+        if (!document.getElementById('accessibility-panel-description')) {
+            const description = document.createElement('div');
+            description.id = 'accessibility-panel-description';
+            description.className = 'sr-only';
+            description.textContent = 'Настройте параметры доступности для комфортного использования сайта';
+            if (panel) {
+                panel.appendChild(description);
+            }
+        }
+
+        // Установка ARIA атрибутов для всех интерактивных элементов
+        this.initializeInteractiveElementsARIA();
+    }
+
+    initializeInteractiveElementsARIA() {
+        // Ползунки
+        document.querySelectorAll('input[type="range"]').forEach(slider => {
+            const valueDisplay = slider.parentElement?.querySelector('.slider-value');
+            if (valueDisplay) {
+                slider.setAttribute('aria-valuenow', slider.value);
+                slider.setAttribute('aria-valuetext', valueDisplay.textContent);
+                slider.setAttribute('aria-valuemin', slider.min);
+                slider.setAttribute('aria-valuemax', slider.max);
+            }
+        });
+
+        // Переключатели
+        document.querySelectorAll('.ios-toggle').forEach(toggle => {
+            const label = toggle.closest('label');
+            if (label) {
+                const labelText = label.querySelector('span')?.textContent || 'Переключатель';
+                toggle.setAttribute('aria-label', labelText);
+            }
+        });
+
+        // Кнопки
+        document.querySelectorAll('.contrast-btn, .reset-btn, .save-profile-btn, .load-profile-btn').forEach(btn => {
+            if (!btn.getAttribute('aria-label')) {
+                btn.setAttribute('aria-label', btn.textContent.trim());
+            }
+        });
+    }
+
+    checkBrowserSupport() {
+        const features = {
+            speechSynthesis: 'speechSynthesis' in window,
+            localStorage: 'localStorage' in window,
+            classList: 'classList' in document.createElement('div'),
+            addEventListener: 'addEventListener' in window,
+            querySelector: 'querySelector' in document,
+            matchMedia: 'matchMedia' in window
+        };
+
+        const unsupported = Object.entries(features)
+            .filter(([feature, supported]) => !supported)
+            .map(([feature]) => feature);
+
+        if (unsupported.length > 0) {
+            console.warn('Неподдерживаемые функции:', unsupported);
+            return false;
+        }
+
+        return true;
+    }
+
+    showCompatibilityWarning() {
+        const warning = document.createElement('div');
+        warning.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: #ff6b6b;
+            color: white;
+            padding: 10px;
+            text-align: center;
+            z-index: 10000;
+            font-family: system-ui;
+        `;
+        warning.textContent = 'Ваш браузер не поддерживает все функции доступности. Рекомендуем обновить браузер.';
+        document.body.appendChild(warning);
+
+        setTimeout(() => {
+            warning.remove();
+        }, 10000);
     }
 
     optimizePerformance() {
@@ -122,10 +259,29 @@ class AccessibilityPanel {
 
         // Предзагрузка критических элементов
         this.preloadCriticalElements();
+
+        // Поддержка prefers-reduced-motion
+        this.handleReducedMotionPreference();
+    }
+
+    handleReducedMotionPreference() {
+        const reducedMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+        
+        const handleReducedMotion = (e) => {
+            this.settings.reducedMotion = e.matches ? 1 : 0;
+            if (e.matches) {
+                document.body.classList.add('reduced-motion-enabled');
+                this.announce('Режим уменьшенного движения активирован системой');
+            } else {
+                document.body.classList.remove('reduced-motion-enabled');
+            }
+        };
+
+        reducedMotionQuery.addEventListener('change', handleReducedMotion);
+        handleReducedMotion(reducedMotionQuery);
     }
 
     handleResize() {
-        // Адаптация панели под новый размер экрана
         const panel = document.querySelector(this.config.panel);
         if (panel && panel.classList.contains('active')) {
             this.adjustPanelSize();
@@ -133,9 +289,7 @@ class AccessibilityPanel {
     }
 
     handleScroll() {
-        // Оптимизация при скролле (если нужно)
         if (this.readingLineEl) {
-            // Обновление позиции линейки чтения при скролле
             const rect = this.readingLineEl.getBoundingClientRect();
             if (rect.top < 0 || rect.bottom > window.innerHeight) {
                 this.readingLineEl.style.opacity = '0.5';
@@ -149,8 +303,7 @@ class AccessibilityPanel {
         const panel = document.querySelector(this.config.panel);
         if (!panel) return;
 
-        // Адаптивная высота панели
-        const maxHeight = window.innerHeight * 0.8;
+        const maxHeight = window.innerHeight * 0.9;
         panel.style.maxHeight = maxHeight + 'px';
     }
 
@@ -172,7 +325,6 @@ class AccessibilityPanel {
             currentY = e.touches[0].clientY;
             const deltaY = currentY - startY;
 
-            // Если свайп вниз больше 100px, закрываем панель
             if (deltaY > 100) {
                 this.closePanel();
                 isDragging = false;
@@ -185,7 +337,6 @@ class AccessibilityPanel {
     }
 
     preloadCriticalElements() {
-        // Предзагрузка часто используемых элементов
         this.cachedElements = {
             panel: document.querySelector(this.config.panel),
             overlay: document.querySelector(this.config.overlay),
@@ -194,108 +345,159 @@ class AccessibilityPanel {
         };
     }
 
-    checkBrowserSupport() {
-        const features = {
-            speechSynthesis: 'speechSynthesis' in window,
-            localStorage: 'localStorage' in window,
-            classList: 'classList' in document.createElement('div'),
-            addEventListener: 'addEventListener' in window
-        };
-
-        const unsupported = Object.entries(features)
-            .filter(([feature, supported]) => !supported)
-            .map(([feature]) => feature);
-
-        if (unsupported.length > 0) {
-            console.warn('Неподдерживаемые функции:', unsupported);
-            return false;
-        }
-
-        return true;
-    }
-
     bindEvents() {
         const cfg = this.config;
 
+        // Основные события
         this.safeBind(cfg.floatingBtn, 'click', () => this.openPanel());
         this.safeBind(cfg.headerBtn, 'click', () => this.openPanel());
         this.safeBind(cfg.closeBtn, 'click', () => this.closePanel());
         this.safeBind(cfg.overlay, 'click', () => this.closePanel());
 
+        // Клавиатурные события
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && this.isPanelOpen()) this.closePanel();
+            this.handleGlobalKeydown(e);
         });
 
-        // Ползунок размера текста
-        const slider = document.querySelector(cfg.textSlider);
-        if (slider) {
-            slider.addEventListener('input', (e) => {
-                const value = parseFloat(e.target.value);
-                this.setCustomFontSize(value);
-            });
-        }
+        // События для улучшения доступности
+        this.bindAccessibilityEvents();
 
-        // Инициализация всех ползунков
+        // Инициализация элементов управления
         this.initializeSliders();
-
-        // Инициализация переключателей
         this.initializeToggles();
+        this.initializeButtons();
 
-        // Привязка кнопок
-        this.bindActionButtons('.contrast-btn', (btn) => this.setContrast(btn.dataset.contrast));
+        // События для мобильных устройств
+        this.bindMobileEvents();
+    }
 
-        this.bindSelect('#lineHeight', (val) => this.setLineHeight(val));
-        this.bindSelect('#letterSpacing', (val) => this.setLetterSpacing(val));
-        this.bindSelect('#fontFamily', (val) => this.setFontFamily(val));
-
-        // Озвучка при наведении
-        const hoverSpeech = document.querySelector('#hoverSpeech');
-        if (hoverSpeech) {
-            hoverSpeech.addEventListener('change', (e) => {
-                this.settings.hoverSpeech = e.target.checked;
-                if (e.target.checked) this.enableHoverSpeech();
-                else this.disableHoverSpeech();
-                this.saveSettings();
-            });
+    handleGlobalKeydown(e) {
+        switch (e.key) {
+            case 'Escape':
+                if (this.isPanelOpen()) {
+                    this.closePanel();
+                    e.preventDefault();
+                }
+                break;
+            case 'Tab':
+                if (this.isPanelOpen()) {
+                    this.handleFocusTrap(e);
+                }
+                break;
         }
-
-        this.bindToggles([
-            'underlineLinks', 'highlightHeadings', 'highlightLinks', 'pauseAnimations',
-            'readingGuide', 'readingMask', 'bigCursor', 'keyboardNavigation'
-        ]);
-
-        this.safeBind('.reset-btn', 'click', () => this.resetSettings());
-        this.safeBind('.save-profile-btn', 'click', () => this.saveProfile());
-        this.safeBind('.load-profile-btn', 'click', () => this.loadProfile());
     }
 
-    bindActionButtons(selector, callback) {
-        document.querySelectorAll(selector)?.forEach(btn => {
-            btn.addEventListener('click', () => callback(btn));
+    handleFocusTrap(e) {
+        const panel = document.querySelector(this.config.panel);
+        if (!panel || !panel.contains(document.activeElement)) return;
+
+        const focusableElements = this.getFocusableElements(panel);
+        if (focusableElements.length === 0) return;
+
+        const firstElement = focusableElements[0];
+        const lastElement = focusableElements[focusableElements.length - 1];
+
+        if (e.shiftKey && document.activeElement === firstElement) {
+            lastElement.focus();
+            e.preventDefault();
+        } else if (!e.shiftKey && document.activeElement === lastElement) {
+            firstElement.focus();
+            e.preventDefault();
+        }
+    }
+
+    getFocusableElements(container) {
+        const focusableSelectors = [
+            'button:not([disabled])',
+            'input:not([disabled])',
+            'select:not([disabled])',
+            'textarea:not([disabled])',
+            'a[href]',
+            '[tabindex]:not([tabindex="-1"])',
+            'details',
+            'summary'
+        ].join(',');
+
+        return Array.from(container.querySelectorAll(focusableSelectors))
+            .filter(el => {
+                const style = window.getComputedStyle(el);
+                return style.visibility !== 'hidden' && 
+                       style.display !== 'none' &&
+                       el.offsetWidth > 0 &&
+                       el.offsetHeight > 0;
+            })
+            .sort((a, b) => {
+                const aIndex = parseInt(a.getAttribute('tabindex') || 0);
+                const bIndex = parseInt(b.getAttribute('tabindex') || 0);
+                return aIndex - bIndex;
+            });
+    }
+
+    bindAccessibilityEvents() {
+        // Авто-озвучка изменений для скринридеров
+        document.addEventListener('change', (e) => {
+            if (e.target.type === 'range' || e.target.type === 'checkbox') {
+                this.announceChange(e.target);
+            }
         });
-    }
 
-    bindSelect(selector, callback) {
-        const el = document.querySelector(selector);
-        if (el) el.addEventListener('change', (e) => callback(e.target.value));
-    }
-
-    bindToggles(toggles) {
-        toggles.forEach(toggle => {
-            const el = document.getElementById(toggle);
-            if (el) {
-                el.addEventListener('change', (e) => {
-                    this.settings[toggle] = e.target.checked;
-                    this.applyToggleSetting(toggle, e.target.checked);
-                    this.saveSettings();
-                });
+        // Улучшенная фокусировка
+        document.addEventListener('focusin', (e) => {
+            if (this.isPanelOpen() && e.target.closest(this.config.panel)) {
+                this.highlightFocusedElement(e.target);
             }
         });
     }
 
+    bindMobileEvents() {
+        // Улучшенная поддержка сенсорных устройств
+        document.addEventListener('touchstart', (e) => {
+            // Увеличиваем область касания для маленьких элементов
+            const target = e.target;
+            if (target.classList.contains('ios-toggle') || 
+                target.classList.contains('contrast-btn') ||
+                target.closest('.slider-container')) {
+                target.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    target.style.transform = '';
+                }, 150);
+            }
+        }, { passive: true });
+    }
+
+    announceChange(element) {
+        let announcement = '';
+
+        if (element.type === 'range') {
+            const valueDisplay = element.parentElement?.querySelector('.slider-value');
+            const label = element.closest('label')?.querySelector('span')?.textContent || 'Настройка';
+            announcement = `${label}: ${valueDisplay?.textContent || element.value}`;
+        } else if (element.type === 'checkbox') {
+            const label = element.closest('label')?.querySelector('span')?.textContent || 'Переключатель';
+            announcement = `${label}: ${element.checked ? 'включено' : 'выключено'}`;
+        }
+
+        if (announcement) {
+            this.announce(announcement);
+        }
+    }
+
+    highlightFocusedElement(element) {
+        // Временное выделение сфокусированного элемента
+        element.style.outline = '3px solid #4A90E2';
+        element.style.outlineOffset = '2px';
+        
+        setTimeout(() => {
+            element.style.outline = '';
+            element.style.outlineOffset = '';
+        }, 1000);
+    }
+
     safeBind(selector, event, handler) {
-        const el = document.querySelector(selector);
-        if (el) el.addEventListener(event, handler);
+        const elements = document.querySelectorAll(selector);
+        elements.forEach(el => {
+            el.addEventListener(event, handler);
+        });
     }
 
     updateSliderTrack(slider, value) {
@@ -303,16 +505,20 @@ class AccessibilityPanel {
         const max = parseFloat(slider.max);
         const percentage = ((value - min) / (max - min)) * 100;
 
-        // Обновляем CSS переменную для трека
         slider.style.setProperty('--value', `${percentage}%`);
         
-        // Добавляем анимацию при изменении
+        // Обновление ARIA атрибутов
+        const valueDisplay = slider.parentElement?.querySelector('.slider-value');
+        if (valueDisplay) {
+            slider.setAttribute('aria-valuenow', value);
+            slider.setAttribute('aria-valuetext', valueDisplay.textContent);
+        }
+
         slider.classList.add('updating');
         setTimeout(() => {
             slider.classList.remove('updating');
         }, 300);
 
-        // Улучшенный градиент с плавными переходами
         const activeColor = '#4A90E2';
         const inactiveColor = '#e9ecef';
         slider.style.background = `linear-gradient(to right, ${activeColor} 0%, ${activeColor} ${percentage}%, ${inactiveColor} ${percentage}%, ${inactiveColor} 100%)`;
@@ -323,11 +529,9 @@ class AccessibilityPanel {
         const label = toggle?.closest('.toggle-label');
 
         if (label) {
-            if (isActive) {
-                label.classList.add('active');
-            } else {
-                label.classList.remove('active');
-            }
+            label.classList.toggle('active', isActive);
+            // Обновление ARIA состояния
+            toggle.setAttribute('aria-checked', isActive.toString());
         }
     }
 
@@ -347,9 +551,22 @@ class AccessibilityPanel {
         toggles.forEach(({ id, handler }) => {
             const toggle = document.getElementById(id);
             if (toggle) {
+                // Установка начальных ARIA атрибутов
+                toggle.setAttribute('role', 'switch');
+                toggle.setAttribute('aria-checked', toggle.checked.toString());
+
                 toggle.addEventListener('change', (e) => {
                     const value = e.target.checked ? 1 : 0;
                     handler(value);
+                });
+
+                // Поддержка пробела для переключения
+                toggle.addEventListener('keydown', (e) => {
+                    if (e.key === ' ') {
+                        e.preventDefault();
+                        toggle.checked = !toggle.checked;
+                        toggle.dispatchEvent(new Event('change'));
+                    }
                 });
             }
         });
@@ -357,47 +574,43 @@ class AccessibilityPanel {
 
     initializeSliders() {
         const sliders = [
-            { id: 'lineHeightSlider', handler: this.handleLineHeight.bind(this), format: (v) => v, type: 'level' },
+            { id: 'textSizeSlider', handler: this.handleTextSize.bind(this), format: (v) => Math.round(v * 100) + '%', type: 'percentage' },
+            { id: 'lineHeightSlider', handler: this.handleLineHeight.bind(this), format: (v) => v.toFixed(1), type: 'level' },
             { id: 'letterSpacingSlider', handler: this.handleLetterSpacing.bind(this), format: (v) => v + 'px', type: 'pixels' },
             { id: 'wordSpacingSlider', handler: this.handleWordSpacing.bind(this), format: (v) => v + 'px', type: 'pixels' },
             { id: 'cursorSizeSlider', handler: this.handleCursorSize.bind(this), format: (v) => ['Обычный', 'Большой', 'Очень большой'][v - 1], type: 'level' },
-            { id: 'animationSpeedSlider', handler: this.handleAnimationSpeed.bind(this), format: (v) => ['Выкл', 'Медленная', 'Обычная', 'Быстрая'][v * 2], type: 'level' },
+            { id: 'animationSpeedSlider', handler: this.handleAnimationSpeed.bind(this), format: (v) => ['Выкл', 'Медленная', 'Обычная', 'Быстрая'][Math.round(v * 2)], type: 'level' },
             { id: 'focusEffectSlider', handler: this.handleFocusEffect.bind(this), format: (v) => ['Выкл', 'Обычный', 'Усиленный'][v], type: 'level' },
-            { id: 'speechRateSlider', handler: this.handleSpeechRate.bind(this), format: (v) => v + 'x', type: 'multiplier' },
+            { id: 'speechRateSlider', handler: this.handleSpeechRate.bind(this), format: (v) => v.toFixed(1) + 'x', type: 'multiplier' },
             { id: 'speechVolumeSlider', handler: this.handleSpeechVolume.bind(this), format: (v) => Math.round(v * 100) + '%', type: 'percentage' },
-
         ];
 
         sliders.forEach(({ id, handler, format, type }) => {
             const slider = document.getElementById(id);
-            const valueDisplay = slider?.parentElement.querySelector('.slider-value');
+            const valueDisplay = slider?.parentElement?.querySelector('.slider-value');
 
             if (slider && valueDisplay) {
-                // Установка типа данных для стилизации
-                if (type) {
-                    valueDisplay.setAttribute('data-type', type);
-                }
+                // Установка ARIA атрибутов
+                slider.setAttribute('role', 'slider');
+                slider.setAttribute('aria-orientation', 'horizontal');
+                valueDisplay.setAttribute('data-type', type);
 
-                // Обновление значения при изменении
                 slider.addEventListener('input', (e) => {
                     const value = parseFloat(e.target.value);
-
-                    // Плавная анимация обновления
+                    const formattedValue = format(value);
+                    
+                    // Плавное обновление отображения
                     valueDisplay.classList.add('updating');
                     setTimeout(() => {
                         valueDisplay.classList.remove('updating');
                     }, 400);
 
-                    const formattedValue = format(value);
-                    
-                    // Плавное обновление текста
                     valueDisplay.style.opacity = '0.7';
                     setTimeout(() => {
                         valueDisplay.textContent = formattedValue;
                         valueDisplay.style.opacity = '1';
                     }, 100);
 
-                    // Добавление класса для длинных текстов
                     if (formattedValue.length > 8) {
                         valueDisplay.classList.add('long-text');
                     } else {
@@ -408,17 +621,40 @@ class AccessibilityPanel {
                     handler(value);
                 });
 
-                // Добавляем обработчики для улучшенной интерактивности
-                slider.addEventListener('mousedown', () => {
-                    slider.classList.add('dragging');
-                });
+                // Улучшенная клавиатурная навигация
+                slider.addEventListener('keydown', (e) => {
+                    const step = parseFloat(slider.step) || 0.1;
+                    let newValue = parseFloat(slider.value);
 
-                slider.addEventListener('mouseup', () => {
-                    slider.classList.remove('dragging');
-                });
+                    switch (e.key) {
+                        case 'ArrowRight':
+                        case 'ArrowUp':
+                            newValue += step;
+                            break;
+                        case 'ArrowLeft':
+                        case 'ArrowDown':
+                            newValue -= step;
+                            break;
+                        case 'Home':
+                            newValue = parseFloat(slider.min);
+                            break;
+                        case 'End':
+                            newValue = parseFloat(slider.max);
+                            break;
+                        case 'PageUp':
+                            newValue += step * 5;
+                            break;
+                        case 'PageDown':
+                            newValue -= step * 5;
+                            break;
+                        default:
+                            return;
+                    }
 
-                slider.addEventListener('mouseleave', () => {
-                    slider.classList.remove('dragging');
+                    e.preventDefault();
+                    newValue = Math.max(parseFloat(slider.min), Math.min(parseFloat(slider.max), newValue));
+                    slider.value = newValue;
+                    slider.dispatchEvent(new Event('input'));
                 });
 
                 // Инициализация начального значения
@@ -426,7 +662,6 @@ class AccessibilityPanel {
                 const initialFormattedValue = format(initialValue);
                 valueDisplay.textContent = initialFormattedValue;
 
-                // Добавление класса для длинных текстов при инициализации
                 if (initialFormattedValue.length > 8) {
                     valueDisplay.classList.add('long-text');
                 }
@@ -436,7 +671,55 @@ class AccessibilityPanel {
         });
     }
 
-    // ============ Обработчики ползунков ============
+    initializeButtons() {
+        // Кнопки контраста
+        this.bindActionButtons('.contrast-btn', (btn) => {
+            this.setContrast(btn.dataset.contrast);
+            // Обновление состояния активной кнопки
+            document.querySelectorAll('.contrast-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            btn.focus();
+        });
+
+        // Управляющие кнопки
+        this.safeBind('.reset-btn', 'click', () => this.resetSettings());
+        this.safeBind('.save-profile-btn', 'click', () => this.saveProfile());
+        this.safeBind('.load-profile-btn', 'click', () => this.loadProfile());
+
+        // Улучшенная доступность для кнопок
+        document.querySelectorAll('.contrast-btn, .reset-btn, .save-profile-btn, .load-profile-btn').forEach(btn => {
+            btn.setAttribute('role', 'button');
+            btn.setAttribute('tabindex', '0');
+            
+            btn.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    btn.click();
+                }
+            });
+        });
+    }
+
+    bindActionButtons(selector, callback) {
+        document.querySelectorAll(selector).forEach(btn => {
+            btn.addEventListener('click', () => callback(btn));
+        });
+    }
+
+    // ============ Обработчики настроек ============
+
+    handleTextSize(value) {
+        if (this.contentEl) {
+            this.contentEl.style.fontSize = value + 'em';
+            // Установка минимального размера шрифта для доступности
+            const computedSize = parseFloat(getComputedStyle(this.contentEl).fontSize);
+            if (computedSize < 12) {
+                this.contentEl.style.fontSize = '12px';
+            }
+        }
+        this.settings.customFontSize = value;
+        this.saveSettings();
+    }
 
     handleLineHeight(value) {
         if (this.contentEl) this.contentEl.style.lineHeight = value;
@@ -484,14 +767,9 @@ class AccessibilityPanel {
     }
 
     handleCursorSize(value) {
-        // Удаляем все классы курсора
         document.body.classList.remove('cursor-large-enabled', 'cursor-extra-large-enabled');
 
-        // Применяем новый размер курсора
         switch (value) {
-            case 1:
-                // Обычный курсор - ничего не добавляем
-                break;
             case 2:
                 document.body.classList.add('cursor-large-enabled');
                 break;
@@ -513,7 +791,7 @@ class AccessibilityPanel {
         if (value === 0.5) document.body.classList.add('animation-slow-enabled');
         this.settings.animationSpeed = value;
         this.saveSettings();
-        this.announce(`Скорость анимаций изменена`);
+        this.announce(`Скорость анимаций: ${['отключена', 'медленная', 'обычная', 'быстрая'][Math.round(value * 2)]}`);
     }
 
     handleFocusEffect(value) {
@@ -522,7 +800,7 @@ class AccessibilityPanel {
         if (value === 2) document.body.classList.add('focus-strong-enabled');
         this.settings.focusEffect = value;
         this.saveSettings();
-        this.announce(`Эффект фокуса изменен`);
+        this.announce(`Эффект фокуса: ${['выключен', 'обычный', 'усиленный'][value]}`);
     }
 
     handleScrollBehavior(value) {
@@ -585,46 +863,7 @@ class AccessibilityPanel {
         this.announce(`Режим дислексии: ${value ? 'включен' : 'выключен'}`);
     }
 
-
-
-    // ============ Стили только для контента ============
-
-    setCustomFontSize(value) {
-        if (this.contentEl) this.contentEl.style.fontSize = value + 'em';
-        this.settings.customFontSize = value;
-
-        // Обновление отображения значения
-        const slider = document.getElementById('textSizeSlider');
-        const valueDisplay = slider?.parentElement.querySelector('.slider-value');
-        if (valueDisplay) {
-            valueDisplay.setAttribute('data-type', 'percentage');
-            valueDisplay.classList.add('updating');
-            setTimeout(() => {
-                valueDisplay.classList.remove('updating');
-            }, 300);
-
-            const formattedValue = Math.round(value * 100) + '%';
-            valueDisplay.textContent = formattedValue;
-
-            // Добавление класса для длинных текстов
-            if (formattedValue.length > 8) {
-                valueDisplay.classList.add('long-text');
-            } else {
-                valueDisplay.classList.remove('long-text');
-            }
-        }
-        if (slider) {
-            this.updateSliderTrack(slider, value);
-        }
-
-        this.saveSettings();
-        this.announce(`Размер текста изменен: ${Math.round(value * 100)}%`);
-    }
-
-
-
     setContrast(type) {
-        // Удаляем все цветовые схемы
         const colorSchemes = [
             'high-contrast-enabled', 'dark-theme-enabled', 'inverted-colors-enabled',
             'sepia-enabled', 'blue-light-enabled', 'green-calm-enabled'
@@ -634,26 +873,8 @@ class AccessibilityPanel {
             document.body.classList.remove(scheme);
         });
 
-        // Применяем выбранную схему
-        switch (type) {
-            case 'high':
-                document.body.classList.add('high-contrast-enabled');
-                break;
-            case 'dark':
-                document.body.classList.add('dark-theme-enabled');
-                break;
-            case 'inverted':
-                document.body.classList.add('inverted-colors-enabled');
-                break;
-            case 'sepia':
-                document.body.classList.add('sepia-enabled');
-                break;
-            case 'blue-light':
-                document.body.classList.add('blue-light-enabled');
-                break;
-            case 'green-calm':
-                document.body.classList.add('green-calm-enabled');
-                break;
+        if (type !== 'normal') {
+            document.body.classList.add(`${type}-contrast-enabled`);
         }
 
         this.settings.contrast = type;
@@ -672,72 +893,27 @@ class AccessibilityPanel {
         this.announce(`Цветовая схема: ${schemeNames[type] || type}`);
     }
 
-    setLineHeight(value) {
-        if (this.contentEl) this.contentEl.style.lineHeight = value;
-        this.settings.lineHeight = value;
-        this.saveSettings();
-    }
-
-    setLetterSpacing(value) {
-        if (this.contentEl) this.contentEl.style.letterSpacing = value;
-        this.settings.letterSpacing = value;
-        this.saveSettings();
-    }
-
-    setFontFamily(value) {
-        if (this.contentEl) this.contentEl.style.fontFamily = value;
-        this.settings.fontFamily = value;
-        this.saveSettings();
-    }
-
-    applyHideImages(enabled) {
-        if (!this.contentEl) return;
-        if (enabled) {
-            this.contentEl.classList.add('hide-images');
-            this.announce('Режим без картинок включен');
-        } else {
-            this.contentEl.classList.remove('hide-images');
-            this.announce('Режим без картинок выключен');
-        }
-    }
-
-    applyToggleSetting(toggle, enabled) {
-        if (!this.contentEl) return;
-        switch (toggle) {
-            case 'underlineLinks':
-                this.contentEl.classList.toggle('underline-links', enabled); break;
-            case 'highlightHeadings':
-                this.contentEl.classList.toggle('highlight-headings', enabled); break;
-            case 'highlightLinks':
-                this.contentEl.classList.toggle('highlight-links', enabled); break;
-            case 'pauseAnimations':
-                this.contentEl.classList.toggle('pause-animations', enabled); break;
-            case 'bigCursor':
-                this.contentEl.classList.toggle('big-cursor', enabled); break;
-        }
-    }
-
-    // ============ Панель и линейка остаются как есть ============
+    // ============ Функции доступности ============
 
     enableReadingLine() {
         if (this.readingLineEl) return;
 
-        // Создание линейки чтения
         this.readingLineEl = document.createElement('div');
         Object.assign(this.readingLineEl.style, {
-            position: 'absolute',
+            position: 'fixed',
             left: '0',
             width: '100%',
-            height: '1.6em',
-            background: 'rgba(0, 150, 255, 0.15)',
-            border: '1px solid rgba(0, 150, 255, 0.3)',
+            height: '3px',
+            background: 'rgba(0, 150, 255, 0.6)',
+            border: 'none',
             pointerEvents: 'none',
             zIndex: '999999',
-            transition: 'top 0.1s ease'
+            transition: 'top 0.1s ease',
+            display: 'none'
         });
+        this.readingLineEl.setAttribute('aria-hidden', 'true');
         document.body.appendChild(this.readingLineEl);
 
-        // Создание подсказки
         this.hintBox = document.createElement('div');
         Object.assign(this.hintBox.style, {
             position: 'fixed',
@@ -745,7 +921,7 @@ class AccessibilityPanel {
             color: '#fff',
             padding: '8px 12px',
             borderRadius: '8px',
-            fontSize: '13px',
+            fontSize: '14px',
             fontWeight: '500',
             pointerEvents: 'none',
             zIndex: '1000000',
@@ -755,17 +931,14 @@ class AccessibilityPanel {
             boxShadow: '0 4px 12px rgba(0, 0, 0, 0.2)',
             border: '1px solid rgba(255, 255, 255, 0.2)'
         });
+        this.hintBox.setAttribute('aria-hidden', 'true');
         document.body.appendChild(this.hintBox);
 
-        // Обработчик движения мыши с дебаунсом
         let debounceTimer;
         document.addEventListener('mousemove', this.readingLineHandler = (e) => {
-            // Обновление позиции линейки
-            const lineHeight = parseFloat(getComputedStyle(this.contentEl || document.body).lineHeight) || 24;
-            const y = e.clientY - (lineHeight / 2);
-            this.readingLineEl.style.top = (window.scrollY + y) + 'px';
+            this.readingLineEl.style.display = 'block';
+            this.readingLineEl.style.top = (e.clientY - 1) + 'px';
 
-            // Дебаунс для оптимизации
             clearTimeout(debounceTimer);
             debounceTimer = setTimeout(() => {
                 const el = document.elementFromPoint(e.clientX, e.clientY);
@@ -773,90 +946,12 @@ class AccessibilityPanel {
             }, 50);
         });
 
-        this.announce('Линейка чтения включена');
-    }
-
-    handleElementHover(el, clientX, clientY) {
-        if (!el || !this.hintBox) return;
-
-        // Получение текста элемента
-        let text = this.getElementText(el);
-
-        if (text && text.length > 0) {
-            // Ограничение длины текста
-            const maxWords = 15;
-            const words = text.split(/\s+/);
-            if (words.length > maxWords) {
-                text = words.slice(0, maxWords).join(' ') + '...';
-            }
-
-            // Обновление подсказки
-            this.hintBox.textContent = text;
-
-            // Позиционирование подсказки
-            const offset = 15;
-            let left = clientX + offset;
-            let top = clientY + offset;
-
-            // Проверка границ экрана
-            const hintRect = this.hintBox.getBoundingClientRect();
-            if (left + 300 > window.innerWidth) {
-                left = clientX - 300 - offset;
-            }
-            if (top + hintRect.height > window.innerHeight) {
-                top = clientY - hintRect.height - offset;
-            }
-
-            this.hintBox.style.left = Math.max(10, left) + 'px';
-            this.hintBox.style.top = Math.max(10, top) + 'px';
-            this.hintBox.style.display = 'block';
-
-            // Озвучка только при смене текста
-            if (this.lastHint !== text) {
-                this.lastHint = text;
-                this.speakText(text);
-            }
-        } else {
+        document.addEventListener('mouseleave', () => {
+            this.readingLineEl.style.display = 'none';
             this.hintBox.style.display = 'none';
-            this.lastHint = '';
-        }
-    }
+        });
 
-    getElementText(el) {
-        if (!el) return '';
-
-        // Приоритет для разных типов элементов
-        if (el.alt && el.tagName === 'IMG') {
-            return `Изображение: ${el.alt}`;
-        }
-
-        if (el.title) {
-            return el.title;
-        }
-
-        if (el.getAttribute('aria-label')) {
-            return el.getAttribute('aria-label');
-        }
-
-        if (el.tagName === 'A' && el.href) {
-            const linkText = el.innerText?.trim() || el.textContent?.trim();
-            return linkText ? `Ссылка: ${linkText}` : `Ссылка: ${el.href}`;
-        }
-
-        if (el.tagName === 'BUTTON') {
-            const buttonText = el.innerText?.trim() || el.textContent?.trim();
-            return buttonText ? `Кнопка: ${buttonText}` : 'Кнопка';
-        }
-
-        // Для заголовков
-        if (['H1', 'H2', 'H3', 'H4', 'H5', 'H6'].includes(el.tagName)) {
-            const headingText = el.innerText?.trim() || el.textContent?.trim();
-            return headingText ? `Заголовок: ${headingText}` : '';
-        }
-
-        // Обычный текст
-        const text = el.innerText?.trim() || el.textContent?.trim();
-        return text && text.length > 2 ? text : '';
+        this.announce('Линейка чтения включена. Наводите курсор на текст для озвучки.');
     }
 
     disableReadingLine() {
@@ -876,10 +971,81 @@ class AccessibilityPanel {
         this.announce('Линейка чтения выключена');
     }
 
+    handleElementHover(el, clientX, clientY) {
+        if (!el || !this.hintBox) return;
+
+        let text = this.getElementText(el);
+
+        if (text && text.length > 0) {
+            const maxWords = 10;
+            const words = text.split(/\s+/);
+            if (words.length > maxWords) {
+                text = words.slice(0, maxWords).join(' ') + '...';
+            }
+
+            this.hintBox.textContent = text;
+
+            const offset = 15;
+            let left = clientX + offset;
+            let top = clientY + offset;
+
+            const hintRect = this.hintBox.getBoundingClientRect();
+            if (left + hintRect.width > window.innerWidth) {
+                left = clientX - hintRect.width - offset;
+            }
+            if (top + hintRect.height > window.innerHeight) {
+                top = clientY - hintRect.height - offset;
+            }
+
+            this.hintBox.style.left = Math.max(10, left) + 'px';
+            this.hintBox.style.top = Math.max(10, top) + 'px';
+            this.hintBox.style.display = 'block';
+
+            if (this.lastHint !== text) {
+                this.lastHint = text;
+                this.speakText(text);
+            }
+        } else {
+            this.hintBox.style.display = 'none';
+            this.lastHint = '';
+        }
+    }
+
+    getElementText(el) {
+        if (!el) return '';
+
+        // Пропускаем элементы панели доступности
+        if (el.closest('#accessibilityPanel')) return '';
+
+        if (el.alt && el.tagName === 'IMG') {
+            return `Изображение: ${el.alt}`;
+        }
+        if (el.title) {
+            return el.title;
+        }
+        if (el.getAttribute('aria-label')) {
+            return el.getAttribute('aria-label');
+        }
+        if (el.tagName === 'A' && el.href) {
+            const linkText = el.textContent?.trim();
+            return linkText ? `Ссылка: ${linkText}` : `Ссылка`;
+        }
+        if (el.tagName === 'BUTTON') {
+            const buttonText = el.textContent?.trim();
+            return buttonText ? `Кнопка: ${buttonText}` : 'Кнопка';
+        }
+        if (['H1', 'H2', 'H3', 'H4', 'H5', 'H6'].includes(el.tagName)) {
+            const headingText = el.textContent?.trim();
+            return headingText ? `Заголовок: ${headingText}` : '';
+        }
+
+        const text = el.textContent?.trim();
+        return text && text.length > 2 && !el.querySelector('*') ? text : '';
+    }
+
     enableHoverSpeech() {
         if (this.hoverSpeechHandler) return;
 
-        // Создание обработчика наведения только для озвучки
         this.hoverSpeechHandler = (e) => {
             const el = e.target;
             if (!el || !this.contentEl?.contains(el)) return;
@@ -891,10 +1057,9 @@ class AccessibilityPanel {
             }
         };
 
-        // Обработчик для сброса при уходе мыши
         this.hoverLeaveHandler = () => {
             this.lastHoverText = '';
-            speechSynthesis.cancel();
+            this.stopSpeech();
         };
 
         if (this.contentEl) {
@@ -909,93 +1074,120 @@ class AccessibilityPanel {
         if (this.hoverSpeechHandler && this.contentEl) {
             this.contentEl.removeEventListener('mouseover', this.hoverSpeechHandler);
             this.contentEl.removeEventListener('mouseleave', this.hoverLeaveHandler);
-            this.hoverSpeechHandler = null;
-            this.hoverLeaveHandler = null;
         }
         this.lastHoverText = '';
-        speechSynthesis.cancel();
+        this.stopSpeech();
         this.announce('Озвучка при наведении выключена');
     }
 
-    speakHoverText(text) {
-        if (!text || !('speechSynthesis' in window) || !this.settings.hoverSpeech) return;
+    speakText(text) {
+        if (!text || !this.settings.readingLine) return;
+        this.speak(text, 0.8);
+    }
 
-        // Ограничение длины для озвучки
+    speakHoverText(text) {
+        if (!text || !this.settings.hoverSpeech) return;
+        this.speak(text, 0.7);
+    }
+
+    speak(text, volume = 0.8) {
+        if (!text || !('speechSynthesis' in window)) return;
+
+        // Ограничение длины текста
         if (text.length > 150) {
             text = text.substring(0, 150) + '...';
         }
 
-        // Отмена предыдущей озвучки
-        speechSynthesis.cancel();
+        this.stopSpeech();
 
-        // Создание нового высказывания
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = "ru-RU";
-        utterance.rate = this.settings.speechRate || 1.1;
-        utterance.pitch = 1.0;
-        utterance.volume = this.settings.speechVolume || 0.7;
+        this.currentUtterance = new SpeechSynthesisUtterance(text);
+        this.currentUtterance.lang = "ru-RU";
+        this.currentUtterance.rate = this.settings.speechRate || 1.0;
+        this.currentUtterance.pitch = 1.0;
+        this.currentUtterance.volume = volume * (this.settings.speechVolume || 0.8);
 
-        // Обработка ошибок
-        utterance.onerror = (event) => {
-            console.warn('Ошибка озвучки при наведении:', event.error);
+        this.currentUtterance.onend = () => {
+            this.isSpeaking = false;
         };
 
-        speechSynthesis.speak(utterance);
+        this.currentUtterance.onerror = (event) => {
+            console.warn('Ошибка озвучки:', event.error);
+            this.isSpeaking = false;
+        };
+
+        this.isSpeaking = true;
+        speechSynthesis.speak(this.currentUtterance);
     }
 
-
-
-    speakText(text) {
-        if (!text || !('speechSynthesis' in window) || !this.settings.readingLine) return;
-
-        // Ограничение длины для озвучки
-        if (text.length > 200) {
-            text = text.substring(0, 200) + '...';
+    stopSpeech() {
+        if (speechSynthesis.speaking) {
+            speechSynthesis.cancel();
         }
-
-        // Отмена предыдущей озвучки
-        speechSynthesis.cancel();
-
-        // Создание нового высказывания
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = "ru-RU";
-        utterance.rate = this.settings.speechRate || 0.9;
-        utterance.pitch = 1.0;
-        utterance.volume = this.settings.speechVolume || 0.8;
-
-        // Обработка ошибок
-        utterance.onerror = (event) => {
-            console.warn('Ошибка озвучки линейки:', event.error);
-        };
-
-        // Небольшая задержка для избежания спама
-        setTimeout(() => {
-            if (this.lastHint === text) { // Проверяем, что текст не изменился
-                speechSynthesis.speak(utterance);
-            }
-        }, 150);
+        this.isSpeaking = false;
+        this.currentUtterance = null;
     }
+
+    // ============ Управление панелью ============
 
     openPanel() {
-        const panel = document.querySelector(this.config.panel);
-        const overlay = document.querySelector(this.config.overlay);
-        if (panel && overlay) {
+        const panel = this.cachedElements?.panel || document.querySelector(this.config.panel);
+
+        if (panel) {
+            // Сохраняем текущий фокус
+            this.focusManager.previousFocus = document.activeElement;
+
             panel.classList.add('active');
-            overlay.classList.add('active');
-            document.body.style.overflow = 'hidden';
-            this.announce('Панель доступности открыта');
+            document.body.classList.add('accessibility-panel-open');
+
+            // Установка фокуса в панель
+            requestAnimationFrame(() => {
+                const firstFocusable = this.getFocusableElements(panel)[0];
+                if (firstFocusable) {
+                    firstFocusable.focus();
+                } else {
+                    panel.focus();
+                }
+            });
+
+            // Ловушка фокуса
+            this.setupFocusTrap(panel);
+
+            this.announce('Панель доступности открыта. Используйте Tab для навигации, Escape для закрытия.');
         }
     }
 
     closePanel() {
-        const panel = document.querySelector(this.config.panel);
-        const overlay = document.querySelector(this.config.overlay);
-        if (panel && overlay) {
+        const panel = this.cachedElements?.panel || document.querySelector(this.config.panel);
+
+        if (panel) {
             panel.classList.remove('active');
-            overlay.classList.remove('active');
-            document.body.style.overflow = '';
+            document.body.classList.remove('accessibility-panel-open');
+
+            // Убираем ловушку фокуса
+            this.removeFocusTrap();
+
+            // Возвращаем фокус
+            if (this.focusManager.previousFocus) {
+                this.focusManager.previousFocus.focus();
+            } else {
+                const triggerBtn = document.querySelector('.floating-accessibility-btn, .accessibility-toggle');
+                if (triggerBtn) triggerBtn.focus();
+            }
+
             this.announce('Панель доступности закрыта');
         }
+    }
+
+    setupFocusTrap(panel) {
+        this.focusManager.trapElement = panel;
+        
+        // Сохраняем фокусируемые элементы
+        this.focusManager.focusableElements = this.getFocusableElements(panel);
+    }
+
+    removeFocusTrap() {
+        this.focusManager.trapElement = null;
+        this.focusManager.focusableElements = [];
     }
 
     isPanelOpen() {
@@ -1003,243 +1195,9 @@ class AccessibilityPanel {
         return panel && panel.classList.contains('active');
     }
 
-    saveProfile() {
-        const profileName = prompt('Введите название профиля:', `Профиль ${new Date().toLocaleDateString()}`);
-        if (!profileName) return;
-
-        const profiles = JSON.parse(localStorage.getItem('accessibilityProfiles') || '{}');
-        profiles[profileName] = { ...this.settings };
-        localStorage.setItem('accessibilityProfiles', JSON.stringify(profiles));
-        this.announce(`Профиль "${profileName}" сохранен`);
-    }
-
-    loadProfile() {
-        const profiles = JSON.parse(localStorage.getItem('accessibilityProfiles') || '{}');
-        const profileNames = Object.keys(profiles);
-
-        if (profileNames.length === 0) {
-            this.announce('Нет сохраненных профилей');
-            return;
-        }
-
-        const profileList = profileNames.map((name, index) => `${index + 1}. ${name}`).join('\n');
-        const choice = prompt(`Выберите профиль для загрузки:\n${profileList}\n\nВведите номер профиля:`);
-
-        if (!choice) return;
-
-        const profileIndex = parseInt(choice) - 1;
-        const selectedProfile = profileNames[profileIndex];
-
-        if (selectedProfile && profiles[selectedProfile]) {
-            this.settings = { ...this.settings, ...profiles[selectedProfile] };
-            this.applyAllSettings();
-            this.saveSettings();
-            this.announce(`Профиль "${selectedProfile}" загружен`);
-        } else {
-            this.announce('Неверный выбор профиля');
-        }
-    }
-
-    saveSettings() {
-        try {
-            localStorage.setItem('accessibilitySettings', JSON.stringify(this.settings));
-        } catch (e) {
-            console.error('Ошибка сохранения настроек:', e);
-        }
-    }
-
-    restoreSettings() {
-        const saved = localStorage.getItem('accessibilitySettings');
-        if (saved) {
-            this.settings = { ...this.settings, ...JSON.parse(saved) };
-            this.applyAllSettings();
-        }
-    }
-
-    applyAllSettings() {
-        // Применение всех настроек
-        if (this.settings.customFontSize) this.setCustomFontSize(this.settings.customFontSize);
-
-        // Применение стилей текста
-        this.handleLineHeight(this.settings.lineHeight);
-        this.handleLetterSpacing(this.settings.letterSpacing);
-        this.handleWordSpacing(this.settings.wordSpacing);
-
-        // Применение визуальных настроек
-        this.handleUnderlineLinks(this.settings.underlineLinks);
-        this.handleHighlightHeadings(this.settings.highlightHeadings);
-        this.handleHighlightLinks(this.settings.highlightLinks);
-        this.handleCursorSize(this.settings.cursorSize);
-
-        // Применение анимаций и эффектов
-        this.handleAnimationSpeed(this.settings.animationSpeed);
-        this.handleFocusEffect(this.settings.focusEffect);
-        this.handleScrollBehavior(this.settings.scrollBehavior);
-
-        // Применение специальных возможностей
-        this.handleHideImages(this.settings.hideImages);
-        this.handleKeyboardNav(this.settings.keyboardNav);
-        this.handleDyslexia(this.settings.dyslexia);
-
-        if (this.settings.readingLine) this.enableReadingLine();
-        if (this.settings.hoverSpeech) this.enableHoverSpeech();
-
-
-        // Обновление значений ползунков и переключателей
-        this.updateSliderValues();
-        this.updateToggleValues();
-    }
-
-    updateSliderValues() {
-        const sliderMappings = {
-            'textSizeSlider': this.settings.customFontSize,
-            'lineHeightSlider': this.settings.lineHeight,
-            'letterSpacingSlider': this.settings.letterSpacing,
-            'wordSpacingSlider': this.settings.wordSpacing,
-            'cursorSizeSlider': this.settings.cursorSize,
-            'animationSpeedSlider': this.settings.animationSpeed,
-            'focusEffectSlider': this.settings.focusEffect,
-            'speechRateSlider': this.settings.speechRate,
-            'speechVolumeSlider': this.settings.speechVolume,
-
-        };
-
-        Object.entries(sliderMappings).forEach(([sliderId, value]) => {
-            const slider = document.getElementById(sliderId);
-            if (slider) {
-                slider.value = value;
-                // Триггер события для обновления отображаемого значения
-                slider.dispatchEvent(new Event('input'));
-            }
-        });
-    }
-
-    updateToggleValues() {
-        const toggleMappings = {
-            'underlineLinksToggle': this.settings.underlineLinks,
-            'highlightHeadingsToggle': this.settings.highlightHeadings,
-            'highlightLinksToggle': this.settings.highlightLinks,
-            'scrollBehaviorToggle': this.settings.scrollBehavior,
-            'readingLineToggle': this.settings.readingLine,
-            'hoverSpeechToggle': this.settings.hoverSpeech,
-            'hideImagesToggle': this.settings.hideImages,
-            'keyboardNavToggle': this.settings.keyboardNav,
-            'dyslexiaToggle': this.settings.dyslexia
-        };
-
-        Object.entries(toggleMappings).forEach(([toggleId, value]) => {
-            const toggle = document.getElementById(toggleId);
-            if (toggle) {
-                toggle.checked = value === 1;
-            }
-        });
-    }
-
-    resetSettings() {
-        // Отключение всех активных функций
-        this.disableReadingLine();
-        this.disableHoverSpeech();
-
-
-        // Сброс всех настроек к значениям по умолчанию
-        this.settings = {
-            customFontSize: 1.0,
-            contrast: 'normal',
-            lineHeight: 1.5,
-            letterSpacing: 0,
-            wordSpacing: 0,
-            fontFamily: 'inter',
-            underlineLinks: 0,
-            highlightHeadings: 0,
-            highlightLinks: 0,
-            cursorSize: 1,
-            animationSpeed: 1,
-            focusEffect: 1,
-            scrollBehavior: 0,
-            readingLine: 0,
-            hoverSpeech: 0,
-            speechRate: 1.0,
-            speechVolume: 0.8,
-            hideImages: 0,
-            keyboardNav: 0,
-            dyslexia: 0
-        };
-
-        // Сброс стилей контента
-        if (this.contentEl) {
-            this.contentEl.style.fontSize = '';
-            this.contentEl.style.lineHeight = '';
-            this.contentEl.style.letterSpacing = '';
-            this.contentEl.style.wordSpacing = '';
-            this.contentEl.style.fontFamily = '';
-        }
-
-        // Удаление всех классов доступности с body
-        const classesToRemove = [
-            'high-contrast-enabled', 'dark-theme-enabled', 'inverted-colors-enabled',
-            'sepia-enabled', 'blue-light-enabled', 'green-calm-enabled',
-            'underline-links-enabled', 'enhanced-headings-enabled', 'enhanced-links-enabled',
-            'cursor-large-enabled', 'cursor-extra-large-enabled', 'animation-slow-enabled',
-            'animation-disabled-enabled', 'focus-enhanced-enabled', 'focus-strong-enabled',
-            'smooth-scroll-enabled', 'hide-images-enabled', 'keyboard-navigation-enabled',
-            'dyslexia-mode-enabled'
-        ];
-
-        classesToRemove.forEach(className => {
-            document.body.classList.remove(className);
-        });
-
-        // Сброс статусов переключателей
-        document.querySelectorAll('.toggle-label').forEach(label => {
-            label.classList.remove('active');
-        });
-
-        // Сброс элементов управления
-        document.querySelectorAll('.font-btn, .contrast-btn').forEach(btn => {
-            btn.classList.remove('active');
-        });
-
-        // Обновление всех ползунков
-        this.updateSliderValues();
-
-        // Сохранение сброшенных настроек
-        this.saveSettings();
-        this.announce('Все настройки сброшены');
-    }
-
-    announce(msg) {
-        const el = document.querySelector(this.config.announcer);
-        if (el) {
-            el.textContent = msg;
-            setTimeout(() => { el.textContent = ''; }, 1000);
-        }
-
-        // Озвучка объявлений только если включена одна из функций озвучки
-        if (this.settings.readingLine || this.settings.hoverSpeech) {
-            this.speakAnnouncement(msg);
-        }
-    }
-
-    speakAnnouncement(text) {
-        if (!text || !('speechSynthesis' in window)) return;
-
-        speechSynthesis.cancel();
-
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = "ru-RU";
-        utterance.rate = 1.0;
-        utterance.pitch = 1.0;
-        utterance.volume = 0.9;
-
-        speechSynthesis.speak(utterance);
-    }
-
-
-
     // ============ Сохранение и восстановление настроек ============
 
     saveSettings() {
-        // Дебаунс для оптимизации частых сохранений
         clearTimeout(this.saveTimer);
         this.saveTimer = setTimeout(() => {
             try {
@@ -1251,14 +1209,8 @@ class AccessibilityPanel {
                 localStorage.setItem('accessibilitySettings', JSON.stringify(settingsData));
             } catch (error) {
                 console.warn('Не удалось сохранить настройки:', error);
-                // Fallback: попробуем сохранить только настройки без метаданных
-                try {
-                    localStorage.setItem('accessibilitySettings', JSON.stringify(this.settings));
-                } catch (fallbackError) {
-                    console.error('Критическая ошибка сохранения:', fallbackError);
-                }
             }
-        }, 300);
+        }, 500);
     }
 
     restoreSettings() {
@@ -1266,16 +1218,11 @@ class AccessibilityPanel {
             const saved = localStorage.getItem('accessibilitySettings');
             if (saved) {
                 const data = JSON.parse(saved);
-
-                // Поддержка старого и нового формата
                 const settings = data.settings || data;
 
-                // Валидация настроек
                 if (this.validateSettings(settings)) {
                     Object.assign(this.settings, settings);
                     this.applyAllSettings();
-                } else {
-                    console.warn('Настройки повреждены, используем значения по умолчанию');
                 }
             }
         } catch (error) {
@@ -1284,14 +1231,13 @@ class AccessibilityPanel {
     }
 
     validateSettings(settings) {
-        // Проверяем основные свойства настроек
         const requiredKeys = ['customFontSize', 'contrast', 'lineHeight'];
         return requiredKeys.every(key => key in settings);
     }
 
     applyAllSettings() {
-        // Применяем все сохраненные настройки
-        this.setCustomFontSize(this.settings.customFontSize);
+        // Применяем все настройки
+        this.handleTextSize(this.settings.customFontSize);
         this.setContrast(this.settings.contrast);
         this.handleLineHeight(this.settings.lineHeight);
         this.handleLetterSpacing(this.settings.letterSpacing);
@@ -1312,8 +1258,7 @@ class AccessibilityPanel {
         if (this.settings.readingLine) this.enableReadingLine();
         if (this.settings.hoverSpeech) this.enableHoverSpeech();
 
-
-        // Обновляем UI элементы
+        // Обновляем UI
         this.updateUIElements();
     }
 
@@ -1329,14 +1274,12 @@ class AccessibilityPanel {
             { id: 'focusEffectSlider', value: this.settings.focusEffect },
             { id: 'speechRateSlider', value: this.settings.speechRate },
             { id: 'speechVolumeSlider', value: this.settings.speechVolume },
-
         ];
 
         sliders.forEach(({ id, value }) => {
             const slider = document.getElementById(id);
             if (slider) {
                 slider.value = value;
-                // Триггерим событие для обновления отображения
                 slider.dispatchEvent(new Event('input'));
             }
         });
@@ -1369,14 +1312,18 @@ class AccessibilityPanel {
     }
 
     resetSettings() {
-        // Сброс к значениям по умолчанию
+        // Отключаем активные функции
+        this.disableReadingLine();
+        this.disableHoverSpeech();
+
+        // Сброс настроек
         this.settings = {
             customFontSize: 1.0,
             contrast: 'normal',
-            lineHeight: 1.5,
+            lineHeight: 1.6,
             letterSpacing: 0,
             wordSpacing: 0,
-            fontFamily: 'inter',
+            fontFamily: 'system-ui',
             underlineLinks: 0,
             highlightHeadings: 0,
             highlightLinks: 0,
@@ -1390,14 +1337,11 @@ class AccessibilityPanel {
             speechVolume: 0.8,
             hideImages: 0,
             keyboardNav: 0,
-            dyslexia: 0
+            dyslexia: 0,
+            reducedMotion: this.settings.reducedMotion // Сохраняем системную настройку
         };
 
-        // Отключаем все активные функции
-        this.disableReadingLine();
-        this.disableHoverSpeech();
-
-        // Удаляем все классы с body
+        // Удаляем все классы доступности
         const classesToRemove = [
             'cursor-large-enabled', 'cursor-extra-large-enabled',
             'animation-slow-enabled', 'animation-disabled-enabled',
@@ -1433,7 +1377,7 @@ class AccessibilityPanel {
             const profileData = {
                 settings: this.settings,
                 timestamp: new Date().toISOString(),
-                version: '3.1'
+                version: '3.2'
             };
 
             const blob = new Blob([JSON.stringify(profileData, null, 2)], { type: 'application/json' });
@@ -1442,6 +1386,7 @@ class AccessibilityPanel {
             const a = document.createElement('a');
             a.href = url;
             a.download = `accessibility-profile-${new Date().toISOString().split('T')[0]}.json`;
+            a.setAttribute('aria-label', 'Скачать профиль доступности');
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
@@ -1458,6 +1403,7 @@ class AccessibilityPanel {
         const input = document.createElement('input');
         input.type = 'file';
         input.accept = '.json';
+        input.setAttribute('aria-label', 'Выберите файл профиля доступности');
 
         input.onchange = (e) => {
             const file = e.target.files[0];
@@ -1487,74 +1433,25 @@ class AccessibilityPanel {
         input.click();
     }
 
-    // ============ Управление панелью ============
-
-    openPanel() {
-        // Используем кэшированные элементы для лучшей производительности
-        const panel = this.cachedElements?.panel || document.querySelector(this.config.panel);
-
-        if (panel) {
-            // Добавляем класс с анимацией к панели
-            panel.classList.add('active');
-            
-            // Добавляем класс к body для сдвига контента
-            document.body.classList.add('accessibility-panel-open');
-
-            // Адаптивная высота панели
-            this.adjustPanelSize();
-
-            // Оптимизированный фокус
-            requestAnimationFrame(() => {
-                const firstFocusable = panel.querySelector('button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])');
-                if (firstFocusable) {
-                    firstFocusable.focus();
-                }
-            });
-
-            this.announce('Панель доступности открыта');
-        }
-    }
-
-    closePanel() {
-        const panel = this.cachedElements?.panel || document.querySelector(this.config.panel);
-
-        if (panel) {
-            panel.classList.remove('active');
-            
-            // Убираем класс с body для возврата контента
-            document.body.classList.remove('accessibility-panel-open');
-
-            // Возвращаем фокус на кнопку, которая открыла панель
-            const triggerBtn = document.querySelector('.floating-accessibility-btn, .accessibility-toggle');
-            if (triggerBtn) {
-                triggerBtn.focus();
-            }
-
-            this.announce('Панель доступности закрыта');
-        }
-    }
-
-    isPanelOpen() {
-        const panel = document.querySelector(this.config.panel);
-        return panel && panel.classList.contains('active');
-    }
-
     announce(message) {
         const announcer = document.querySelector(this.config.announcer);
         if (announcer) {
             announcer.textContent = message;
 
-            // Очистка через 3 секунды
+            // Очистка через 5 секунд
             setTimeout(() => {
                 if (announcer.textContent === message) {
                     announcer.textContent = '';
                 }
-            }, 3000);
+            }, 5000);
         }
+
+        // Также выводим в консоль для отладки
+        console.log('Accessibility Announcement:', message);
     }
 }
 
-// Ленивая инициализация панели доступности
+// Глобальная инициализация с улучшенной обработкой ошибок
 (function () {
     'use strict';
 
@@ -1565,32 +1462,49 @@ class AccessibilityPanel {
         if (isInitialized) return panelInstance;
 
         try {
+            // Проверяем, есть ли необходимые DOM элементы
+            if (!document.querySelector('.accessibility-panel')) {
+                console.warn('Панель доступности не найдена в DOM');
+                return null;
+            }
+
             panelInstance = new AccessibilityPanel();
             isInitialized = true;
+            
+            // Глобальный обработчик ошибок для панели
+            window.addEventListener('error', (event) => {
+                if (event.filename && event.filename.includes('accessibility')) {
+                    console.error('Ошибка в панели доступности:', event.error);
+                    if (panelInstance) {
+                        panelInstance.announce('Произошла ошибка в работе панели доступности');
+                    }
+                }
+            });
+
             return panelInstance;
         } catch (error) {
-            console.error('Ошибка инициализации панели доступности:', error);
+            console.error('Критическая ошибка инициализации панели доступности:', error);
             return null;
         }
     }
 
-    // Инициализация при загрузке DOM
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', initializePanel);
-    } else {
-        initializePanel();
+    // Отложенная инициализация
+    function lazyInitialize() {
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializePanel);
+        } else {
+            // Небольшая задержка для гарантии загрузки DOM
+            setTimeout(initializePanel, 100);
+        }
     }
 
     // Глобальный доступ к панели
     window.accessibilityPanel = {
         getInstance: () => panelInstance || initializePanel(),
-        isReady: () => isInitialized
+        isReady: () => isInitialized,
+        init: lazyInitialize
     };
 
-    // Обработка ошибок на уровне окна
-    window.addEventListener('error', (event) => {
-        if (event.filename && event.filename.includes('accessibility')) {
-            console.error('Ошибка в панели доступности:', event.error);
-        }
-    });
+    // Автоматическая инициализация
+    lazyInitialize();
 })();
