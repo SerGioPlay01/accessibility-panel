@@ -1392,16 +1392,19 @@ input[type=range]:hover {
 
 /* ==================== СТИЛИ ДЛЯ КОНТЕНТА САЙТА ==================== */
 
-/* ЦВЕТОВЫЕ СХЕМЫ - УЛУЧШЕННАЯ ВЕРСИЯ */
-
-/* Базовые стили для контента */
-.page-content {
-    transition: filter 0.3s ease, background-color 0.3s ease;
+/* ЦВЕТОВЫЕ СХЕМЫ - ОБНОВЛЕННЫЕ И ИСПРАВЛЕННЫЕ */
+.accessibility-ready .page-content {
+    transition: filter 0.3s ease, background-color 0.3s ease, color 0.3s ease;
 }
 
-/* Высокая контрастность */
+/* Высокая контрастность - УЛУЧШЕННАЯ */
+.high-contrast-enabled {
+    background-color: #ffffff !important;
+    color: #000000 !important;
+}
+
 .high-contrast-enabled .page-content {
-    filter: contrast(150%) brightness(1.2) !important;
+    filter: contrast(200%) brightness(1.1) !important;
     background-color: #ffffff !important;
     color: #000000 !important;
 }
@@ -1412,42 +1415,114 @@ input[type=range]:hover {
     border-color: #000000 !important;
 }
 
-/* Тёмная тема */
+.high-contrast-enabled .page-content a:not(.accessibility-panel a) {
+    color: #0000EE !important;
+    text-decoration: underline !important;
+    font-weight: bold !important;
+}
+
+.high-contrast-enabled .page-content button:not(.accessibility-panel button) {
+    background-color: #000000 !important;
+    color: #ffffff !important;
+    border: 2px solid #000000 !important;
+}
+
+/* Тёмная тема - УЛУЧШЕННАЯ */
+.dark-theme-enabled {
+    background-color: #0a0a0a !important;
+    color: #e8e8e8 !important;
+}
+
 .dark-theme-enabled .page-content {
-    background-color: #1a1a1a !important;
-    color: #e0e0e0 !important;
+    background-color: #0a0a0a !important;
+    color: #e8e8e8 !important;
 }
 
 .dark-theme-enabled .page-content *:not(.accessibility-panel):not(.accessibility-panel *):not(.floating-accessibility-btn) {
-    background-color: #1a1a1a !important;
-    color: #e0e0e0 !important;
+    background-color: #0a0a0a !important;
+    color: #e8e8e8 !important;
     border-color: #444444 !important;
 }
 
-/* Инвертированные цвета */
+.dark-theme-enabled .page-content a:not(.accessibility-panel a) {
+    color: #66b3ff !important;
+}
+
+.dark-theme-enabled .page-content h1:not(.accessibility-panel h1),
+.dark-theme-enabled .page-content h2:not(.accessibility-panel h2),
+.dark-theme-enabled .page-content h3:not(.accessibility-panel h3) {
+    color: #ffffff !important;
+}
+
+/* Инвертированные цвета - УЛУЧШЕННАЯ */
 .inverted-colors-enabled .page-content {
+    filter: invert(1) hue-rotate(180deg) contrast(0.9) !important;
+    background-color: #ffffff !important;
+}
+
+.inverted-colors-enabled .page-content img:not(.accessibility-panel img),
+.inverted-colors-enabled .page-content video:not(.accessibility-panel video),
+.inverted-colors-enabled .page-content iframe:not(.accessibility-panel iframe) {
     filter: invert(1) hue-rotate(180deg) !important;
-    background-color: white !important; /* Базовый цвет для инверсии */
 }
 
-/* Сепия */
+/* Сепия - УЛУЧШЕННАЯ */
 .sepia-enabled .page-content {
-    filter: sepia(100%) hue-rotate(15deg) saturate(1.2) !important;
-    background-color: #f8f0e0 !important; /* Базовый сепия цвет */
+    filter: sepia(80%) hue-rotate(5deg) saturate(0.9) brightness(1.05) !important;
+    background-color: #f8f0e0 !important;
+    color: #5c4b37 !important;
 }
 
-/* Синий свет */
+.sepia-enabled .page-content *:not(.accessibility-panel):not(.accessibility-panel *):not(.floating-accessibility-btn) {
+    background-color: transparent !important;
+}
+
+/* Синий свет - УЛУЧШЕННАЯ */
 .blue-light-enabled .page-content {
-    filter: hue-rotate(180deg) saturate(0.8) brightness(1.1) !important;
-    background-color: #f0f8ff !important; /* Базовый голубоватый цвет */
+    filter: hue-rotate(200deg) saturate(0.6) brightness(1.08) !important;
+    background-color: #f0f8ff !important;
 }
 
-/* Зелёный спокойный */
+.blue-light-enabled .page-content *:not(.accessibility-panel):not(.accessibility-panel *):not(.floating-accessibility-btn) {
+    background-color: transparent !important;
+}
+
+/* Зелёный спокойный - УЛУЧШЕННАЯ */
 .green-calm-enabled .page-content {
-    filter: hue-rotate(90deg) saturate(0.7) brightness(1.05) !important;
-    background-color: #f0fff0 !important; /* Базовый зеленоватый цвет */
+    filter: hue-rotate(100deg) saturate(0.5) brightness(1.05) !important;
+    background-color: #f0fff0 !important;
 }
 
+.green-calm-enabled .page-content *:not(.accessibility-panel):not(.accessibility-panel *):not(.floating-accessibility-btn) {
+    background-color: transparent !important;
+}
+
+/* Обеспечение читаемости текста во всех режимах */
+.high-contrast-enabled .page-content p,
+.dark-theme-enabled .page-content p,
+.inverted-colors-enabled .page-content p,
+.sepia-enabled .page-content p,
+.blue-light-enabled .page-content p,
+.green-calm-enabled .page-content p {
+    line-height: 1.6 !important;
+}
+
+/* Улучшение контраста для интерактивных элементов */
+.high-contrast-enabled .page-content button:not(.accessibility-panel button),
+.high-contrast-enabled .page-content input:not(.accessibility-panel input),
+.high-contrast-enabled .page-content select:not(.accessibility-panel select) {
+    border: 2px solid #000000 !important;
+    background-color: #ffffff !important;
+    color: #000000 !important;
+}
+
+.dark-theme-enabled .page-content button:not(.accessibility-panel button),
+.dark-theme-enabled .page-content input:not(.accessibility-panel input),
+.dark-theme-enabled .page-content select:not(.accessibility-panel select) {
+    border: 1px solid #555555 !important;
+    background-color: #1a1a1a !important;
+    color: #e8e8e8 !important;
+}
 /* Отключение анимаций для пользователей с предпочтением reduced-motion */
 @media (prefers-reduced-motion: reduce) {
     .page-content {
