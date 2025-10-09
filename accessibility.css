@@ -1392,7 +1392,14 @@ input[type=range]:hover {
 
 /* ==================== СТИЛИ ДЛЯ КОНТЕНТА САЙТА ==================== */
 
-/* ЦВЕТОВЫЕ СХЕМЫ - ИСПРАВЛЕННЫЕ */
+/* ЦВЕТОВЫЕ СХЕМЫ - УЛУЧШЕННАЯ ВЕРСИЯ */
+
+/* Базовые стили для контента */
+.page-content {
+    transition: filter 0.3s ease, background-color 0.3s ease;
+}
+
+/* Высокая контрастность */
 .high-contrast-enabled .page-content {
     filter: contrast(150%) brightness(1.2) !important;
     background-color: #ffffff !important;
@@ -1405,6 +1412,7 @@ input[type=range]:hover {
     border-color: #000000 !important;
 }
 
+/* Тёмная тема */
 .dark-theme-enabled .page-content {
     background-color: #1a1a1a !important;
     color: #e0e0e0 !important;
@@ -1413,24 +1421,39 @@ input[type=range]:hover {
 .dark-theme-enabled .page-content *:not(.accessibility-panel):not(.accessibility-panel *):not(.floating-accessibility-btn) {
     background-color: #1a1a1a !important;
     color: #e0e0e0 !important;
+    border-color: #444444 !important;
 }
 
+/* Инвертированные цвета */
 .inverted-colors-enabled .page-content {
     filter: invert(1) hue-rotate(180deg) !important;
+    background-color: white !important; /* Базовый цвет для инверсии */
 }
 
+/* Сепия */
 .sepia-enabled .page-content {
     filter: sepia(100%) hue-rotate(15deg) saturate(1.2) !important;
+    background-color: #f8f0e0 !important; /* Базовый сепия цвет */
 }
 
+/* Синий свет */
 .blue-light-enabled .page-content {
     filter: hue-rotate(180deg) saturate(0.8) brightness(1.1) !important;
+    background-color: #f0f8ff !important; /* Базовый голубоватый цвет */
 }
 
+/* Зелёный спокойный */
 .green-calm-enabled .page-content {
     filter: hue-rotate(90deg) saturate(0.7) brightness(1.05) !important;
+    background-color: #f0fff0 !important; /* Базовый зеленоватый цвет */
 }
 
+/* Отключение анимаций для пользователей с предпочтением reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+    .page-content {
+        transition: none !important;
+    }
+}
 /* Визуальные улучшения */
 .underline-links-enabled .page-content a:not(.accessibility-panel a):not(.floating-accessibility-btn) {
     text-decoration: underline !important;
