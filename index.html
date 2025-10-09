@@ -1,502 +1,921 @@
-<!--
-  Универсальная панель доступности v3.2
-  Автор: SerGio Play | https://sergioplay-dev.vercel.app/
-  Лицензия: MIT License
-  
-  Copyright (c) 2025 SerGio Play
-  
-  Permission is hereby granted, free of charge, to any person obtaining a copy
-  of this software and associated documentation files (the "Software"), to deal
-  in the Software without restriction, including without limitation the rights
-  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-  copies of the Software, and to permit persons to whom the Software is
-  furnished to do so, subject to the following conditions:
-  
-  The above copyright notice and this permission notice shall be included in all
-  copies or substantial portions of the Software.
-  
-  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-  SOFTWARE.
--->
 <!DOCTYPE html>
 <html lang="ru">
-
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <meta name="description" content="Универсальная панель доступности с функциями озвучки и адаптивным дизайном">
-  <meta name="theme-color" content="#2c5aa0">
-  <link rel="stylesheet" href="/accessibility.css">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <title>Панель доступности - Улучшенная версия</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accessibility Panel v3.2 | Универсальная панель доступности</title>
+    <meta name="description" content="Универсальная панель доступности с функциями озвучки, адаптивным дизайном и поддержкой WCAG 2.1. Улучшите доступность вашего сайта для всех пользователей.">
+    <meta name="keywords" content="доступность, accessibility, WCAG, веб-разработка, инклюзивный дизайн, панель доступности">
+    <meta name="author" content="SerGio Play">
+    <meta property="og:title" content="Accessibility Panel v3.2 | Универсальная панель доступности">
+    <meta property="og:description" content="Универсальная панель доступности с функциями озвучки, адаптивным дизайном и поддержкой WCAG 2.1.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://sergioplay-dev.vercel.app/accessibility-panel">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Accessibility Panel v3.2">
+    <meta name="twitter:description" content="Универсальная панель доступности с функциями озвучки и адаптивным дизайном">
+    <style>
+        /* Базовые стили */
+        :root {
+            --primary: #2c5aa0;
+            --primary-dark: #1e3a8a;
+            --secondary: #4A90E2;
+            --accent: #34C759;
+            --text: #2c3e50;
+            --text-light: #6c757d;
+            --bg: #ffffff;
+            --bg-light: #f8f9fa;
+            --border: #e1e5e9;
+            --shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            --radius: 12px;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            line-height: 1.6;
+            color: var(--text);
+            background-color: var(--bg);
+            overflow-x: hidden;
+        }
+
+        /* Типография */
+        h1, h2, h3, h4, h5, h6 {
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 1rem;
+        }
+
+        h1 {
+            font-size: 3rem;
+        }
+
+        h2 {
+            font-size: 2.5rem;
+        }
+
+        h3 {
+            font-size: 2rem;
+        }
+
+        h4 {
+            font-size: 1.5rem;
+        }
+
+        p {
+            margin-bottom: 1rem;
+        }
+
+        a {
+            color: var(--secondary);
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        a:hover {
+            color: var(--primary);
+        }
+
+        /* Контейнеры */
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .section {
+            padding: 80px 0;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .section-title {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 2px;
+        }
+
+        .section-subtitle {
+            font-size: 1.2rem;
+            color: var(--text-light);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Кнопки */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 12px 24px;
+            border-radius: var(--radius);
+            font-weight: 600;
+            text-decoration: none;
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            box-shadow: var(--shadow);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(44, 90, 160, 0.3);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+
+        .btn-secondary:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* Шапка */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+
+        .nav {
+            display: flex;
+            gap: 30px;
+        }
+
+        .nav-link {
+            font-weight: 500;
+            color: var(--text);
+        }
+
+        .nav-link:hover {
+            color: var(--primary);
+        }
+
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text);
+        }
+
+        /* Герой секция */
+        .hero {
+            padding: 160px 0 80px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 50%;
+            height: 100%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0,0 L100,0 L100,100 Z" fill="rgba(255,255,255,0.1)"/></svg>');
+            background-size: cover;
+        }
+
+        .hero-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+        }
+
+        .hero-content h1 {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-content p {
+            font-size: 1.2rem;
+            color: var(--text-light);
+            margin-bottom: 30px;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        /* Браузер демо */
+        .browser-demo {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+            transform: perspective(1000px) rotateY(-5deg) rotateX(5deg);
+            transition: var(--transition);
+        }
+
+        .browser-demo:hover {
+            transform: perspective(1000px) rotateY(0) rotateX(0);
+        }
+
+        .browser-header {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            background: #f1f3f4;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .browser-controls {
+            display: flex;
+            gap: 8px;
+            margin-right: 20px;
+        }
+
+        .browser-control {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .browser-control.close {
+            background: #ff5f57;
+        }
+
+        .browser-control.minimize {
+            background: #ffbd2e;
+        }
+
+        .browser-control.maximize {
+            background: #28ca42;
+        }
+
+        .browser-url {
+            flex: 1;
+            background: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            color: var(--text-light);
+            border: 1px solid var(--border);
+        }
+
+        .browser-content {
+            padding: 0;
+            height: 400px;
+            background: white;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .demo-panel {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: white;
+            transition: transform 0.5s ease;
+        }
+
+        .demo-panel.hidden {
+            transform: translateX(-100%);
+        }
+
+        .demo-content {
+            padding: 30px;
+            height: 100%;
+            overflow-y: auto;
+        }
+
+        /* Функции */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 30px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            text-align: center;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .feature-icon {
+            width: 70px;
+            height: 70px;
+            margin: 0 auto 20px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            color: white;
+        }
+
+        .feature-title {
+            font-size: 1.3rem;
+            margin-bottom: 15px;
+        }
+
+        /* Преимущества */
+        .benefits {
+            background: var(--bg-light);
+        }
+
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .benefit-item {
+            display: flex;
+            gap: 20px;
+            align-items: flex-start;
+        }
+
+        .benefit-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+
+        .benefit-content h3 {
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+        }
+
+        /* Демо секция */
+        .demo {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-align: center;
+        }
+
+        .demo .section-title::after {
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        .demo-container {
+            max-width: 800px;
+        }
+
+        .demo-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .demo-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .demo-btn:hover {
+            background: white;
+            color: var(--primary);
+        }
+
+        /* Об авторе */
+        .author {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 40px;
+            align-items: center;
+        }
+
+        .author-avatar {
+            width: 100%;
+            max-width: 300px;
+            border-radius: 50%;
+            box-shadow: var(--shadow);
+        }
+
+        .author-bio h2 {
+            margin-bottom: 20px;
+        }
+
+        .author-links {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        /* Контакты */
+        .contact-form {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--secondary);
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+        }
+
+        textarea.form-control {
+            min-height: 150px;
+            resize: vertical;
+        }
+
+        /* Футер */
+        .footer {
+            background: var(--text);
+            color: white;
+            padding: 60px 0 30px;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .footer-col h3 {
+            color: white;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 10px;
+        }
+
+        .footer-links a {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .footer-links a:hover {
+            color: white;
+        }
+
+        .footer-bottom {
+            text-align: center;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        /* Адаптивность */
+        @media (max-width: 992px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+            
+            h2 {
+                font-size: 2rem;
+            }
+            
+            .hero-container {
+                grid-template-columns: 1fr;
+                gap: 40px;
+            }
+            
+            .author {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+            
+            .author-links {
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav {
+                display: none;
+            }
+            
+            .mobile-menu-btn {
+                display: block;
+            }
+            
+            .hero-content h1 {
+                font-size: 2.5rem;
+            }
+            
+            .hero-buttons {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .demo-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .section {
+                padding: 60px 0;
+            }
+            
+            .hero {
+                padding: 120px 0 60px;
+            }
+            
+            .hero-content h1 {
+                font-size: 2rem;
+            }
+            
+            .features-grid,
+            .benefits-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
-
 <body>
-
-
-
-  <!-- Плавающая кнопка -->
-  <button class="floating-accessibility-btn" aria-label="Панель доступности">♿</button>
-
-  <!-- Панель -->
-  <div id="accessibilityPanel" class="accessibility-panel" role="dialog" aria-labelledby="accessibility-title"
-    aria-modal="true" aria-describedby="accessibility-description">
-    <div class="accessibility-header">
-      <h3 id="accessibility-title">Панель доступности</h3>
-      <button class="close-panel" aria-label="Закрыть панель доступности"></button>
-    </div>
-    <div id="accessibility-description" class="sr-only">
-      Настройте параметры доступности для комфортного использования сайта
-    </div>
-
-    <div class="accessibility-content">
-      <!-- Размер текста -->
-      <div class="accessibility-group">
-        <h4>📝 Размер текста</h4>
-        <label>
-          Размер текста (80% – 200%)
-          <div class="slider-container">
-            <input type="range" id="textSizeSlider" min="0.8" max="2.0" step="0.1" value="1.0">
-            <span class="slider-value">100%</span>
-          </div>
-        </label>
-      </div>
-
-      <!-- Цветовые схемы -->
-      <div class="accessibility-group">
-        <h4>🎨 Цветовая схема</h4>
-        <div class="color-scheme-grid">
-          <button class="contrast-btn" data-contrast="normal">🌟 Обычная</button>
-          <button class="contrast-btn" data-contrast="high">⚫ Контраст</button>
-          <button class="contrast-btn" data-contrast="dark">🌙 Тёмная</button>
-          <button class="contrast-btn" data-contrast="inverted">🔄 Инверсия</button>
-          <button class="contrast-btn" data-contrast="sepia">📜 Сепия</button>
-          <button class="contrast-btn" data-contrast="blue-light">💙 Синий свет</button>
-          <button class="contrast-btn" data-contrast="green-calm">🌿 Зелёный</button>
+    <!-- Шапка -->
+    <header class="header">
+        <div class="container header-container">
+            <a href="#" class="logo">
+                <span>♿</span>
+                <span>Accessibility Panel</span>
+            </a>
+            <nav class="nav">
+                <a href="#features" class="nav-link">Функции</a>
+                <a href="#benefits" class="nav-link">Преимущества</a>
+                <a href="#demo" class="nav-link">Демо</a>
+                <a href="#author" class="nav-link">Об авторе</a>
+                <a href="#contact" class="nav-link">Контакты</a>
+            </nav>
+            <button class="mobile-menu-btn">☰</button>
         </div>
-      </div>
-
-      <!-- Интервалы и отступы -->
-      <div class="accessibility-group">
-        <h4>📏 Интервалы текста</h4>
-        <label>
-          Межстрочный интервал
-          <div class="slider-container">
-            <input type="range" id="lineHeightSlider" min="1.0" max="2.5" step="0.1" value="1.5">
-            <span class="slider-value">1.5</span>
-          </div>
-        </label>
-        <label>
-          Межбуквенный интервал
-          <div class="slider-container">
-            <input type="range" id="letterSpacingSlider" min="0" max="5" step="0.5" value="0">
-            <span class="slider-value">0px</span>
-          </div>
-        </label>
-        <label>
-          Отступы между словами
-          <div class="slider-container">
-            <input type="range" id="wordSpacingSlider" min="0" max="10" step="1" value="0">
-            <span class="slider-value">0px</span>
-          </div>
-        </label>
-      </div>
-
-      <!-- Визуальные улучшения -->
-      <div class="accessibility-group">
-        <h4>👁️ Визуальные настройки</h4>
-        <label class="toggle-label">
-          Подчеркивание ссылок
-          <input type="checkbox" id="underlineLinksToggle" class="ios-toggle">
-          <span class="toggle-slider"></span>
-        </label>
-        <label class="toggle-label">
-          Выделение заголовков
-          <input type="checkbox" id="highlightHeadingsToggle" class="ios-toggle">
-          <span class="toggle-slider"></span>
-        </label>
-        <label class="toggle-label">
-          Выделение ссылок
-          <input type="checkbox" id="highlightLinksToggle" class="ios-toggle">
-          <span class="toggle-slider"></span>
-        </label>
-        <label>
-          Размер курсора
-          <div class="slider-container">
-            <input type="range" id="cursorSizeSlider" min="1" max="3" step="1" value="1">
-            <span class="slider-value">Обычный</span>
-          </div>
-        </label>
-      </div>
-
-      <!-- Анимации и движение -->
-      <div class="accessibility-group">
-        <h4>⚡ Анимации и эффекты</h4>
-        <label>
-          Скорость анимаций
-          <div class="slider-container">
-            <input type="range" id="animationSpeedSlider" min="0" max="2" step="0.5" value="1">
-            <span class="slider-value">Обычная</span>
-          </div>
-        </label>
-        <label>
-          Эффект фокуса
-          <div class="slider-container">
-            <input type="range" id="focusEffectSlider" min="0" max="2" step="1" value="1">
-            <span class="slider-value">Обычный</span>
-          </div>
-        </label>
-        <label class="toggle-label">
-          Плавность прокрутки
-          <input type="checkbox" id="scrollBehaviorToggle" class="ios-toggle">
-          <span class="toggle-slider"></span>
-        </label>
-      </div>
-
-      <!-- Озвучка и звук -->
-      <div class="accessibility-group">
-        <h4>🔊 Озвучка и звук</h4>
-        <label class="toggle-label">
-          Линейка чтения с озвучкой
-          <input type="checkbox" id="readingLineToggle" class="ios-toggle">
-          <span class="toggle-slider"></span>
-        </label>
-        <label class="toggle-label">
-          Озвучка при наведении
-          <input type="checkbox" id="hoverSpeechToggle" class="ios-toggle">
-          <span class="toggle-slider"></span>
-        </label>
-        <label>
-          Скорость озвучки
-          <div class="slider-container">
-            <input type="range" id="speechRateSlider" min="0.5" max="2.0" step="0.1" value="1.0">
-            <span class="slider-value">1.0x</span>
-          </div>
-        </label>
-        <label>
-          Громкость озвучки
-          <div class="slider-container">
-            <input type="range" id="speechVolumeSlider" min="0.1" max="1.0" step="0.1" value="0.8">
-            <span class="slider-value">80%</span>
-          </div>
-        </label>
-      </div>
-
-      <!-- Специальные возможности -->
-      <div class="accessibility-group">
-        <h4>♿ Специальные возможности</h4>
-        <label class="toggle-label">
-          Режим без изображений
-          <input type="checkbox" id="hideImagesToggle" class="ios-toggle">
-          <span class="toggle-slider"></span>
-        </label>
-        <label class="toggle-label">
-          Клавиатурная навигация
-          <input type="checkbox" id="keyboardNavToggle" class="ios-toggle">
-          <span class="toggle-slider"></span>
-        </label>
-        <label class="toggle-label">
-          Режим дислексии
-          <input type="checkbox" id="dyslexiaToggle" class="ios-toggle">
-          <span class="toggle-slider"></span>
-        </label>
-
-      </div>
-
-      <!-- Управление профилями -->
-      <div class="accessibility-group">
-        <h4>💾 Управление профилями</h4>
-        <div class="profile-controls">
-          <button class="save-profile-btn">💾 Сохранить профиль</button>
-          <button class="load-profile-btn">📂 Загрузить профиль</button>
-          <button class="reset-btn">🔄 Сбросить настройки</button>
-        </div>
-      </div>
-    </div>
-    
-    <!-- Водяной знак автора -->
-    <div style="margin-top: auto; padding: 16px 20px; border-top: 1px solid rgba(0, 0, 0, 0.06); background: rgba(248, 249, 250, 0.8);">
-      <div style="text-align: center;">
-        <p style="margin: 0; font-size: 11px; color: #6c757d; line-height: 1.4;">
-          Создано с ❤️ by <a href="https://sergioplay-dev.vercel.app/" target="_blank" rel="noopener noreferrer" style="color: #4A90E2; text-decoration: none; font-weight: 600;">SerGio Play</a>
-        </p>
-        <p style="margin: 4px 0 0 0; font-size: 10px; color: #adb5bd;">
-          Панель доступности v3.2 • MIT License
-        </p>
-      </div>
-    </div>
-  </div>
-
-  <!-- Оверлей -->
-  <div id="accessibilityOverlay" class="accessibility-overlay"></div>
-
-  <!-- Сообщения для скринридеров -->
-  <div id="sr-announcements" style="position:absolute;left:-9999px;" aria-live="polite" aria-atomic="true"></div>
-
-  <!-- ======= ДЕМО-КОНТЕНТ ======= -->
-  <div class="page-content">
-    <!-- Кнопка в хедере -->
-    <header
-      style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; margin-bottom: 30px;">
-      <nav style="display: flex; justify-content: space-between; align-items: center;">
-        <h1 style="margin: 0; font-size: 1.8rem;">📰 Новостной портал</h1>
-        <button class="accessibility-toggle" aria-label="Открыть панель доступности"
-          style="background: rgba(255,255,255,0.2); border: 1px solid rgba(255,255,255,0.3); color: white; padding: 10px 15px; border-radius: 8px; cursor: pointer;">♿
-          Панель доступности</button>
-      </nav>
     </header>
 
-    <main style="max-width: 1200px; margin: 0 auto; padding: 0 20px;">
-
-      <!-- Главная новость -->
-      <article
-        style="background: #f8f9fa; padding: 30px; border-radius: 12px; margin-bottom: 30px; border-left: 5px solid #007bff;">
-        <h1 style="color: #2c3e50; margin-bottom: 15px; font-size: 2.2rem;">🚀 Революция в области доступности: новые
-          технологии помогают миллионам людей</h1>
-        <p style="color: #6c757d; margin-bottom: 15px; font-style: italic;">
-          <time datetime="2024-12-19">19 декабря 2024</time> • Автор: <strong>Анна Петрова</strong> • Категория: <a
-            href="#" style="color: #007bff;">Технологии</a>
-        </p>
-        <p style="font-size: 1.1rem; line-height: 1.7; margin-bottom: 20px;">
-          Современные технологии открывают новые горизонты для людей с ограниченными возможностями.
-          <strong>Искусственный интеллект</strong>, <em>голосовые помощники</em> и <mark>адаптивные интерфейсы</mark>
-          становятся мостом между цифровым миром и потребностями каждого человека.
-        </p>
-        <p style="line-height: 1.7;">
-          По данным <abbr title="Всемирная организация здравоохранения">ВОЗ</abbr>, более 1 миллиарда людей в мире живут
-          с той или иной формой инвалидности.
-          Новые решения в области веб-доступности позволяют этим людям полноценно участвовать в цифровой жизни общества.
-        </p>
-        <img src="https://via.placeholder.com/600x300/4a90e2/ffffff?text=Технологии+доступности"
-          alt="Современные технологии доступности: человек использует голосовое управление компьютером"
-          style="width: 100%; height: 300px; object-fit: cover; border-radius: 8px; margin: 20px 0;">
-      </article>
-
-      <!-- Раздел новостей -->
-      <section style="margin-bottom: 40px;">
-        <h2 style="color: #2c3e50; border-bottom: 3px solid #e74c3c; padding-bottom: 10px; margin-bottom: 25px;">📈
-          Последние новости</h2>
-
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 25px;">
-          <article
-            style="border: 1px solid #dee2e6; border-radius: 10px; overflow: hidden; transition: transform 0.2s;">
-            <img src="https://via.placeholder.com/400x200/28a745/ffffff?text=Образование"
-              alt="Студенты с ограниченными возможностями изучают программирование"
-              style="width: 100%; height: 200px; object-fit: cover;">
-            <div style="padding: 20px;">
-              <h3 style="color: #495057; margin-bottom: 10px;">🎓 Инклюзивное образование в IT</h3>
-              <p style="color: #6c757d; line-height: 1.6; margin-bottom: 15px;">
-                Ведущие университеты запускают специальные программы для студентов с инвалидностью.
-                Новые методики обучения программированию адаптированы для людей с различными потребностями.
-              </p>
-              <a href="#" style="color: #007bff; text-decoration: none; font-weight: 500;">Читать далее →</a>
+    <!-- Герой секция -->
+    <section class="hero">
+        <div class="container hero-container">
+            <div class="hero-content">
+                <h1>Универсальная панель доступности</h1>
+                <p>Расширьте аудиторию вашего сайта с помощью современного решения для доступности. Панель v3.2 предлагает полный набор инструментов для соответствия WCAG 2.1 и улучшения пользовательского опыта для всех.</p>
+                <div class="hero-buttons">
+                    <a href="#demo" class="btn btn-primary">🚀 Попробовать демо</a>
+                    <a href="#features" class="btn btn-secondary">📋 Все функции</a>
+                </div>
             </div>
-          </article>
-
-          <article style="border: 1px solid #dee2e6; border-radius: 10px; overflow: hidden;">
-            <img src="https://via.placeholder.com/400x200/6f42c1/ffffff?text=Мобильные+приложения"
-              alt="Мобильное приложение с функциями доступности" style="width: 100%; height: 200px; object-fit: cover;">
-            <div style="padding: 20px;">
-              <h3 style="color: #495057; margin-bottom: 10px;">📱 Мобильные приложения становятся доступнее</h3>
-              <p style="color: #6c757d; line-height: 1.6; margin-bottom: 15px;">
-                Apple и Google представили новые инструменты для разработчиков, которые автоматически
-                проверяют приложения на соответствие стандартам доступности.
-              </p>
-              <a href="#" style="color: #007bff; text-decoration: none; font-weight: 500;">Читать далее →</a>
+            <div class="browser-demo">
+                <div class="browser-header">
+                    <div class="browser-controls">
+                        <div class="browser-control close"></div>
+                        <div class="browser-control minimize"></div>
+                        <div class="browser-control maximize"></div>
+                    </div>
+                    <div class="browser-url">yourwebsite.com/accessibility-panel</div>
+                </div>
+                <div class="browser-content">
+                    <div class="demo-panel">
+                        <div class="demo-content">
+                            <h3>Демонстрация панели доступности</h3>
+                            <p>Здесь отображается демо-версия панели доступности с основными функциями:</p>
+                            <ul>
+                                <li>🔧 Настройка размера текста и контрастности</li>
+                                <li>🎨 Выбор цветовых схем</li>
+                                <li>🔊 Озвучка контента</li>
+                                <li>⚡ Управление анимациями</li>
+                                <li>♿ Специальные возможности</li>
+                            </ul>
+                            <p>Нажмите "Попробовать демо" для интерактивного тестирования!</p>
+                        </div>
+                    </div>
+                </div>
             </div>
-          </article>
         </div>
-      </section>
+    </section>
 
-      <!-- Литературный раздел -->
-      <section
-        style="background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%); padding: 30px; border-radius: 15px; margin-bottom: 40px;">
-        <h2 style="color: #8b4513; text-align: center; margin-bottom: 30px; font-size: 2rem;">📚 Литературная страничка
-        </h2>
+    <!-- Функции -->
+    <section id="features" class="section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Основные функции</h2>
+                <p class="section-subtitle">Панель доступности v3.2 предлагает полный набор инструментов для улучшения доступности вашего сайта</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🔧</div>
+                    <h3 class="feature-title">Адаптивный интерфейс</h3>
+                    <p>Автоматическая адаптация под различные устройства и экраны с сохранением удобства использования</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🎨</div>
+                    <h3 class="feature-title">Цветовые схемы</h3>
+                    <p>7 готовых цветовых схем включая высококонтрастные, темные и специализированные режимы</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔊</div>
+                    <h3 class="feature-title">Озвучка контента</h3>
+                    <p>Функции чтения вслух, озвучки при наведении и настройки параметров речи</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📏</div>
+                    <h3 class="feature-title">Типографика</h3>
+                    <p>Гибкая настройка размера шрифта, межстрочного интервала, межбуквенных и межсловных расстояний</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3 class="feature-title">Управление анимациями</h3>
+                    <p>Контроль скорости анимаций, эффектов фокуса и плавности прокрутки</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">♿</div>
+                    <h3 class="feature-title">Специальные возможности</h3>
+                    <p>Режимы для пользователей с дислексией, ограниченной моторикой и другими особенностями</p>
+                </div>
+            </div>
+        </div>
+    </section>
 
-        <!-- Рассказ -->
-        <article style="background: rgba(255,255,255,0.8); padding: 25px; border-radius: 12px; margin-bottom: 30px;">
-          <h3 style="color: #2c3e50; margin-bottom: 15px; text-align: center;">🌟 Рассказ: "Звуки цвета"</h3>
-          <p style="font-style: italic; text-align: center; color: #6c757d; margin-bottom: 20px;">Автор: Михаил Светлов
-          </p>
+    <!-- Преимущества -->
+    <section id="benefits" class="section benefits">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Преимущества использования</h2>
+                <p class="section-subtitle">Почему стоит выбрать нашу панель доступности для вашего проекта</p>
+            </div>
+            <div class="benefits-grid">
+                <div class="benefit-item">
+                    <div class="benefit-icon">📈</div>
+                    <div class="benefit-content">
+                        <h3>Увеличение аудитории</h3>
+                        <p>Охватите более 1 миллиарда пользователей с различными формами инвалидности по всему миру</p>
+                    </div>
+                </div>
+                <div class="benefit-item">
+                    <div class="benefit-icon">⚖️</div>
+                    <div class="benefit-content">
+                        <h3>Соответствие стандартам</h3>
+                        <p>Полное соответствие WCAG 2.1 уровня AA и законодательным требованиям разных стран</p>
+                    </div>
+                </div>
+                <div class="benefit-item">
+                    <div class="benefit-icon">🚀</div>
+                    <div class="benefit-content">
+                        <h3>Простая интеграция</h3>
+                        <p>Быстрое подключение к любому сайту с минимальными изменениями в коде</p>
+                    </div>
+                </div>
+                <div class="benefit-item">
+                    <div class="benefit-icon">💡</div>
+                    <div class="benefit-content">
+                        <h3>Интуитивный интерфейс</h3>
+                        <p>Понятные настройки, которые легко использовать даже неопытным пользователям</p>
+                    </div>
+                </div>
+                <div class="benefit-item">
+                    <div class="benefit-icon">🔧</div>
+                    <div class="benefit-content">
+                        <h3>Гибкая настройка</h3>
+                        <p>Возможность кастомизации под конкретные потребности вашего проекта</p>
+                    </div>
+                </div>
+                <div class="benefit-item">
+                    <div class="benefit-icon">📱</div>
+                    <div class="benefit-content">
+                        <h3>Полная адаптивность</h3>
+                        <p>Идельная работа на всех устройствах от смартфонов до десктопов</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
-          <p style="line-height: 1.8; margin-bottom: 15px; text-indent: 30px;">
-            Анна всегда <strong>слышала цвета</strong>. Красный звучал как <em>скрипка на высоких нотах</em>,
-            синий — как <mark>глубокое дыхание океана</mark>. Когда она впервые села за компьютер,
-            экран заговорил с ней симфонией оттенков.
-          </p>
+    <!-- Демо -->
+    <section id="demo" class="section demo">
+        <div class="container demo-container">
+            <div class="section-header">
+                <h2 class="section-title">Интерактивная демонстрация</h2>
+                <p class="section-subtitle">Попробуйте панель доступности в действии прямо сейчас</p>
+            </div>
+            <p>Наша демо-панель позволяет оценить все основные функции без необходимости установки. Протестируйте различные настройки и убедитесь в удобстве использования.</p>
+            <div class="demo-buttons">
+                <a href="#" class="btn demo-btn">🎮 Запустить демо</a>
+                <a href="#" class="btn demo-btn">📥 Скачать код</a>
+                <a href="#" class="btn demo-btn">📚 Документация</a>
+            </div>
+        </div>
+    </section>
 
-          <p style="line-height: 1.8; margin-bottom: 15px; text-indent: 30px;">
-            — Мама, а почему этот сайт молчит? — спросила она, указывая на страницу без альтернативного текста для
-            изображений.
-          </p>
+    <!-- Об авторе -->
+    <section id="author" class="section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Об авторе</h2>
+                <p class="section-subtitle">Познакомьтесь с создателем панели доступности</p>
+            </div>
+            <div class="author">
+                <div>
+                    <img src="https://via.placeholder.com/300x300/4a90e2/ffffff?text=SP" alt="Фото автора - SerGio Play" class="author-avatar">
+                </div>
+                <div class="author-bio">
+                    <h2>SerGio Play</h2>
+                    <p>Фронтенд-разработчик с более чем 5-летним опытом, специализирующийся на создании доступных и инклюзивных веб-интерфейсов.</p>
+                    <p>Страстный сторонник принципов доступности и инклюзивного дизайна. Создал панель доступности v3.2 как ответ на растущую потребность в простых и эффективных решениях для улучшения доступности веб-сайтов.</p>
+                    <p>Верит, что технологии должны служить всем людям без исключения, и работает над тем, чтобы сделать веб более открытым и доступным для каждого.</p>
+                    <div class="author-links">
+                        <a href="https://sergioplay-dev.vercel.app/" class="btn btn-secondary">🌐 Веб-сайт</a>
+                        <a href="#" class="btn btn-secondary">💼 LinkedIn</a>
+                        <a href="#" class="btn btn-secondary">🐙 GitHub</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
-          <p style="line-height: 1.8; margin-bottom: 15px; text-indent: 30px;">
-            Мать улыбнулась. Её дочь не просто <u>адаптировалась к миру</u> — она <strong>учила мир адаптироваться к
-              ней</strong>.
-            Через несколько лет Анна стала ведущим специалистом по веб-доступности,
-            помогая сайтам <q>заговорить</q> для миллионов людей.
-          </p>
-
-          <blockquote
-            style="border-left: 4px solid #e74c3c; padding-left: 20px; margin: 20px 0; font-style: italic; color: #495057;">
-            "Доступность — это не ограничение творчества, а его расширение.
-            Когда мы создаём для всех, мы создаём лучше для каждого."
-          </blockquote>
-        </article>
-
-        <!-- Стихотворение -->
-        <article style="background: rgba(255,255,255,0.9); padding: 25px; border-radius: 12px;">
-          <h3 style="color: #2c3e50; margin-bottom: 15px; text-align: center;">🎭 Стихотворение: "Мир без барьеров"</h3>
-          <p style="font-style: italic; text-align: center; color: #6c757d; margin-bottom: 25px;">Автор: Елена Радужная
-          </p>
-
-          <div style="text-align: center; line-height: 2; font-size: 1.1rem; color: #2c3e50;">
-            <p>В мире, где <strong>каждый голос слышен</strong>,<br>
-              Где <em>каждый взгляд имеет значение</em>,<br>
-              Технологии становятся <mark>мостом</mark><br>
-              Между мечтой и её воплощением.</p>
-
-            <p style="margin-top: 20px;">Не важно, как ты видишь этот мир —<br>
-              <u>Глазами, пальцами или сердцем</u>,<br>
-              Важно, что мир открыт для всех,<br>
-              И каждый может стать в нём <strong>первым</strong>.
-            </p>
-
-            <p style="margin-top: 20px;">Пусть <abbr title="Искусственный интеллект">ИИ</abbr> читает вслух,<br>
-              Пусть интерфейс подстроится под тебя,<br>
-              Ведь <em>истинная красота технологий</em><br>
-              В том, что они служат <mark>человечности</mark>.</p>
-          </div>
-        </article>
-      </section>
-
-      <!-- Интерактивные элементы -->
-      <section style="margin-bottom: 40px;">
-        <h2 style="color: #2c3e50; border-bottom: 3px solid #28a745; padding-bottom: 10px; margin-bottom: 25px;">🎮
-          Интерактивные элементы</h2>
-
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px;">
-          <div style="background: #e3f2fd; padding: 20px; border-radius: 10px; border: 2px solid #2196f3;">
-            <h3 style="color: #1976d2; margin-bottom: 15px;">📝 Форма обратной связи</h3>
-            <form>
-              <label for="name" style="display: block; margin-bottom: 5px; font-weight: 500;">Ваше имя:</label>
-              <input type="text" id="name" name="name"
-                style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; margin-bottom: 15px;"
-                placeholder="Введите ваше имя">
-
-              <label for="message" style="display: block; margin-bottom: 5px; font-weight: 500;">Сообщение:</label>
-              <textarea id="message" name="message" rows="4"
-                style="width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 5px; margin-bottom: 15px; resize: vertical;"
-                placeholder="Расскажите о своём опыте использования панели доступности"></textarea>
-
-              <button type="submit"
-                style="background: #2196f3; color: white; border: none; padding: 12px 20px; border-radius: 5px; cursor: pointer; font-weight: 500;">Отправить
-                сообщение</button>
+    <!-- Контакты -->
+    <section id="contact" class="section">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">Свяжитесь с нами</h2>
+                <p class="section-subtitle">Есть вопросы или предложения? Мы будем рады услышать вас!</p>
+            </div>
+            <form class="contact-form">
+                <div class="form-group">
+                    <label for="name" class="form-label">Ваше имя</label>
+                    <input type="text" id="name" class="form-control" placeholder="Введите ваше имя">
+                </div>
+                <div class="form-group">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" id="email" class="form-control" placeholder="Введите ваш email">
+                </div>
+                <div class="form-group">
+                    <label for="message" class="form-label">Сообщение</label>
+                    <textarea id="message" class="form-control" placeholder="Расскажите о вашем проекте или задайте вопрос"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">📨 Отправить сообщение</button>
             </form>
-          </div>
-
-          <div style="background: #f3e5f5; padding: 20px; border-radius: 10px; border: 2px solid #9c27b0;">
-            <h3 style="color: #7b1fa2; margin-bottom: 15px;">🔗 Полезные ссылки</h3>
-            <ul style="list-style-type: none; padding: 0;">
-              <li style="margin-bottom: 10px;">
-                <a href="#" title="Руководство по веб-доступности WCAG 2.1"
-                  style="color: #7b1fa2; text-decoration: none; display: flex; align-items: center; gap: 8px;">
-                  📖 Руководство WCAG 2.1
-                </a>
-              </li>
-              <li style="margin-bottom: 10px;">
-                <a href="#" aria-label="Инструменты для тестирования доступности сайтов"
-                  style="color: #7b1fa2; text-decoration: none; display: flex; align-items: center; gap: 8px;">
-                  🛠️ Инструменты тестирования
-                </a>
-              </li>
-              <li style="margin-bottom: 10px;">
-                <a href="#"
-                  style="color: #7b1fa2; text-decoration: none; display: flex; align-items: center; gap: 8px;">
-                  🎯 Примеры лучших практик
-                </a>
-              </li>
-              <li>
-                <a href="#"
-                  style="color: #7b1fa2; text-decoration: none; display: flex; align-items: center; gap: 8px;">
-                  🌐 Сообщество разработчиков
-                </a>
-              </li>
-            </ul>
-          </div>
         </div>
-      </section>
+    </section>
 
-      <!-- Цитаты и высказывания -->
-      <section style="background: #f8f9fa; padding: 30px; border-radius: 15px; margin-bottom: 40px;">
-        <h2 style="color: #2c3e50; text-align: center; margin-bottom: 30px;">💭 Мудрые мысли о доступности</h2>
-
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 25px;">
-          <blockquote
-            style="background: white; padding: 25px; border-radius: 10px; border-left: 5px solid #e74c3c; margin: 0; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
-            <p style="font-style: italic; font-size: 1.1rem; line-height: 1.6; margin-bottom: 15px; color: #2c3e50;">
-              "Дизайн — это не только то, как что-то выглядит и ощущается.
-              Дизайн — это то, как это работает."
-            </p>
-            <cite style="color: #6c757d; font-weight: 500;">— Стив Джобс</cite>
-          </blockquote>
-
-          <blockquote
-            style="background: white; padding: 25px; border-radius: 10px; border-left: 5px solid #28a745; margin: 0; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
-            <p style="font-style: italic; font-size: 1.1rem; line-height: 1.6; margin-bottom: 15px; color: #2c3e50;">
-              "Интернет предназначен для работы для всех людей,
-              независимо от их оборудования, программного обеспечения, языка,
-              местоположения или способностей."
-            </p>
-            <cite style="color: #6c757d; font-weight: 500;">— Тим Бернерс-Ли</cite>
-          </blockquote>
-
-          <blockquote
-            style="background: white; padding: 25px; border-radius: 10px; border-left: 5px solid #007bff; margin: 0; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
-            <p style="font-style: italic; font-size: 1.1rem; line-height: 1.6; margin-bottom: 15px; color: #2c3e50;">
-              "Доступность — это не специальная функция.
-              Это фундаментальный аспект хорошего дизайна."
-            </p>
-            <cite style="color: #6c757d; font-weight: 500;">— Джен Симмонс</cite>
-          </blockquote>
+    <!-- Футер -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <h3>Accessibility Panel</h3>
+                    <p>Универсальное решение для улучшения доступности вашего веб-сайта. Соответствует WCAG 2.1 и современным стандартам разработки.</p>
+                </div>
+                <div class="footer-col">
+                    <h3>Быстрые ссылки</h3>
+                    <ul class="footer-links">
+                        <li><a href="#features">Функции</a></li>
+                        <li><a href="#benefits">Преимущества</a></li>
+                        <li><a href="#demo">Демо</a></li>
+                        <li><a href="#author">Об авторе</a></li>
+                        <li><a href="#contact">Контакты</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h3>Ресурсы</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">Документация</a></li>
+                        <li><a href="#">Примеры использования</a></li>
+                        <li><a href="#">Часто задаваемые вопросы</a></li>
+                        <li><a href="#">Блог</a></li>
+                        <li><a href="#">Поддержка</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h3>Контакты</h3>
+                    <ul class="footer-links">
+                        <li><a href="https://sergioplay-dev.vercel.app/">sergioplay-dev.vercel.app</a></li>
+                        <li><a href="mailto:contact@sergioplay.dev">contact@sergioplay.dev</a></li>
+                        <li><a href="#">GitHub</a></li>
+                        <li><a href="#">LinkedIn</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2025 SerGio Play. Все права защищены. Панель доступности v3.2 распространяется по лицензии MIT.</p>
+            </div>
         </div>
-      </section>
+    </footer>
 
-      <!-- Заключение -->
-      <footer
-        style="text-align: center; padding: 40px 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border-radius: 15px; margin-top: 40px;">
-        <h2 style="margin-bottom: 20px; font-size: 1.8rem;">🌟 Спасибо за внимание!</h2>
-        <p
-          style="font-size: 1.1rem; line-height: 1.6; margin-bottom: 20px; max-width: 600px; margin-left: auto; margin-right: auto;">
-          Эта демонстрационная страница показывает, как панель доступности может улучшить
-          взаимодействие с различными типами контента. Попробуйте разные настройки
-          и почувствуйте разницу!
-        </p>
-        <button type="button" onclick="alert('Спасибо за тестирование панели доступности! 🎉')"
-          style="background: rgba(255,255,255,0.2); border: 2px solid white; color: white; padding: 15px 30px; border-radius: 25px; cursor: pointer; font-size: 1.1rem; font-weight: 500; transition: all 0.3s ease;">
-          🎉 Завершить демонстрацию
-        </button>
-      </footer>
+    <script>
+        // Простая логика для мобильного меню
+        document.querySelector('.mobile-menu-btn').addEventListener('click', function() {
+            document.querySelector('.nav').classList.toggle('active');
+        });
 
-    </main>
-  </div>
-
-  <!-- Подключение скрипта панели -->
-  <script src="/accessibility.js"></script>
-  <script>
-    // Дополнительная конфигурация при необходимости
-    document.addEventListener("DOMContentLoaded", () => {
-      // Панель инициализируется автоматически
-      console.log('Панель доступности готова к использованию');
-    });
-  </script>
-
+        // Плавная прокрутка для якорных ссылок
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                
+                const targetId = this.getAttribute('href');
+                if (targetId === '#') return;
+                
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+    </script>
 </body>
-
 </html>
