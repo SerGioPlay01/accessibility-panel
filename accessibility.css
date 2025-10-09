@@ -1606,8 +1606,8 @@ input[type=range]:hover {
 /* Темная тема для панели доступности */
 @media (prefers-color-scheme: dark) {
     .accessibility-panel {
-        background: #1a1a1a !important;
-        color: #e0e0e0 !important;
+        background: #dadada !important;
+        color: #2d2d2d !important;
         border-right-color: #333 !important;
     }
 
