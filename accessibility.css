@@ -343,12 +343,12 @@ body.accessibility-panel-open .accessibility-overlay {
     gap: 12px;
     margin-bottom: 12px;
     padding: 14px 16px;
-    background: rgba(248, 249, 250, 0.9);
+    background: rgba(248, 249, 250, 0.5);
     border: 1px solid rgba(0, 0, 0, 0.04);
     border-radius: 12px;
     font-size: 14px;
     font-weight: 500;
-    color: #ffffff;
+    color: #2c3e50;
     min-height: 56px;
     box-sizing: border-box;
     max-width: 100%;
@@ -1232,6 +1232,164 @@ input[type=range].dragging::-moz-range-thumb {
     transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
+/* ==================== УЛУЧШЕННЫЕ ФОНЫ ДЛЯ ДОСТУПНОСТИ ==================== */
+
+/* Высококонтрастные фоны для лучшей читаемости */
+.high-contrast-bg {
+    background: #ffffff !important;
+    color: #000000 !important;
+    border: 2px solid #000000 !important;
+}
+
+.high-contrast-bg:hover {
+    background: #f0f0f0 !important;
+    border-color: #000000 !important;
+}
+
+/* Улучшенные фоны для групп */
+.accessibility-group {
+    background: linear-gradient(135deg, #ffffff 0%, #fafafa 100%) !important;
+    border: 1px solid #e1e5e9 !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
+}
+
+.accessibility-group:hover {
+    background: linear-gradient(135deg, #f8f9fa 0%, #f1f3f5 100%) !important;
+    border-color: #4A90E2 !important;
+    box-shadow: 0 4px 16px rgba(74, 144, 226, 0.15) !important;
+}
+
+/* Улучшенные фоны для лейблов */
+.accessibility-group label {
+    background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 50%) !important;
+    border: 1px solid #e9ecef !important;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
+}
+
+.accessibility-group label:hover {
+    background: linear-gradient(135deg, #e3f2fd 0%, #f3f7ff 100%) !important;
+    border-color: #4A90E2 !important;
+    box-shadow: 0 2px 8px rgba(74, 144, 226, 0.12) !important;
+}
+
+/* Улучшенные фоны для переключателей */
+.toggle-label {
+    background: linear-gradient(135deg, #ffffff 0%, #fcfcfc 100%) !important;
+    border: 1px solid #e1e5e9 !important;
+}
+
+.toggle-label:hover {
+    background: linear-gradient(135deg, #f0f7ff 0%, #e6f3ff 100%) !important;
+    border-color: #4A90E2 !important;
+}
+
+.toggle-label.active {
+    background: linear-gradient(135deg, #e8f5e8 0%, #d4edda 100%) !important;
+    border-color: #28a745 !important;
+}
+
+/* Улучшенные фоны для кнопок */
+.contrast-btn {
+    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%) !important;
+    border: 2px solid #dee2e6 !important;
+    color: #495057 !important;
+}
+
+.contrast-btn:hover {
+    background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%) !important;
+    border-color: #007AFF !important;
+    color: #007AFF !important;
+}
+
+.contrast-btn.active {
+    background: linear-gradient(135deg, #007AFF 0%, #0056cc 100%) !important;
+    border-color: #007AFF !important;
+    color: #ffffff !important;
+}
+
+/* Улучшенные фоны для управляющих кнопок */
+.reset-btn {
+    background: linear-gradient(135deg, #f56565 0%, #e53e3e 100%) !important;
+    border-color: #e53e3e !important;
+    color: #ffffff !important;
+}
+
+.reset-btn:hover {
+    background: linear-gradient(135deg, #e53e3e 0%, #c53030 100%) !important;
+    border-color: #c53030 !important;
+}
+
+.save-profile-btn {
+    background: linear-gradient(135deg, #48bb78 0%, #38a169 100%) !important;
+    border-color: #38a169 !important;
+    color: #ffffff !important;
+}
+
+.save-profile-btn:hover {
+    background: linear-gradient(135deg, #38a169 0%, #2f855a 100%) !important;
+    border-color: #2f855a !important;
+}
+
+.load-profile-btn {
+    background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%) !important;
+    border-color: #3182ce !important;
+    color: #ffffff !important;
+}
+
+.load-profile-btn:hover {
+    background: linear-gradient(135deg, #3182ce 0%, #2b6cb0 100%) !important;
+    border-color: #2b6cb0 !important;
+}
+
+/* Улучшенный фон для плавающей кнопки */
+.floating-accessibility-btn {
+    background: linear-gradient(135deg, #2c5aa0 0%, #1e3a8a 100%) !important;
+    box-shadow: 0 4px 20px rgba(44, 90, 160, 0.3) !important;
+}
+
+.floating-accessibility-btn:hover {
+    background: linear-gradient(135deg, #1e3a8a 0%, #1e2a5a 100%) !important;
+    box-shadow: 0 8px 30px rgba(44, 90, 160, 0.4) !important;
+}
+
+/* Улучшенные фоны для заголовков групп */
+.accessibility-group h4 {
+    background: linear-gradient(135deg, #f1f3f5 0%, #e9ecef 100%) !important;
+    border-bottom: 1px solid #dee2e6 !important;
+    color: #2c3e50 !important;
+}
+
+/* Улучшенные фоны для ползунков */
+input[type=range] {
+    background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%) !important;
+}
+
+input[type=range]:hover {
+    background: linear-gradient(135deg, #dee2e6 0%, #ced4da 100%) !important;
+}
+
+/* Улучшенные фоны для значений ползунков */
+.slider-value {
+    background: linear-gradient(135deg, #495057 0%, #343a40 100%) !important;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2) !important;
+}
+
+.slider-value[data-type="percentage"] {
+    background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%) !important;
+}
+
+.slider-value[data-type="pixels"] {
+    background: linear-gradient(135deg, #fd7e14 0%, #e8590c 100%) !important;
+}
+
+.slider-value[data-type="multiplier"] {
+    background: linear-gradient(135deg, #6f42c1 0%, #5a2d9c 100%) !important;
+}
+
+.slider-value[data-type="level"] {
+    background: linear-gradient(135deg, #17a2b8 0%, #117a8b 100%) !important;
+}
+
 /* ==================== СТИЛИ ДЛЯ КОНТЕНТА САЙТА ==================== */
 
 /* Применяются только к .page-content */
@@ -1386,14 +1544,37 @@ input[type=range].dragging::-moz-range-thumb {
 @media (prefers-contrast: high) {
     .accessibility-panel {
         border: 2px solid #000;
+        background: #ffffff !important;
     }
 
     .accessibility-group {
-        border: 1px solid #000;
+        border: 2px solid #000 !important;
+        background: #ffffff !important;
     }
 
     .accessibility-group label {
-        border: 1px solid #000;
+        border: 1px solid #000 !important;
+        background: #ffffff !important;
+    }
+
+    .toggle-label {
+        border: 1px solid #000 !important;
+        background: #ffffff !important;
+    }
+
+    .contrast-btn {
+        border: 2px solid #000 !important;
+        background: #ffffff !important;
+        color: #000000 !important;
+    }
+
+    .contrast-btn.active {
+        background: #000000 !important;
+        color: #ffffff !important;
+    }
+
+    .slider-value {
+        border: 1px solid #000 !important;
     }
 }
 
@@ -1412,4 +1593,75 @@ input[type=range].dragging::-moz-range-thumb {
     .page-content {
         transition: none;
     }
+
+    .accessibility-group,
+    .accessibility-group label,
+    .toggle-label,
+    .contrast-btn,
+    .slider-value {
+        transition: none !important;
+    }
+}
+
+/* Темная тема для панели доступности */
+@media (prefers-color-scheme: dark) {
+    .accessibility-panel {
+        background: #1a1a1a !important;
+        color: #e0e0e0 !important;
+        border-right-color: #333 !important;
+    }
+
+    .accessibility-group {
+        background: linear-gradient(135deg, #2d2d2d 0%, #252525 100%) !important;
+        border-color: #444 !important;
+        color: #e0e0e0 !important;
+    }
+
+    .accessibility-group h4 {
+        background: linear-gradient(135deg, #3a3a3a 0%, #333333 100%) !important;
+        color: #ffffff !important;
+        border-bottom-color: #444 !important;
+    }
+
+    .accessibility-group label {
+        background: linear-gradient(135deg, #2d2d2d 0%, #333333 100%) !important;
+        border-color: #444 !important;
+        color: #e0e0e0 !important;
+    }
+
+    .accessibility-group label:hover {
+        background: linear-gradient(135deg, #3a3a3a 0%, #363636 100%) !important;
+    }
+
+    .toggle-label {
+        background: linear-gradient(135deg, #2d2d2d 0%, #333333 100%) !important;
+        border-color: #444 !important;
+        color: #e0e0e0 !important;
+    }
+
+    .contrast-btn {
+        background: linear-gradient(135deg, #333 0%, #2d2d2d 100%) !important;
+        border-color: #555 !important;
+        color: #e0e0e0 !important;
+    }
+
+    .contrast-btn.active {
+        background: linear-gradient(135deg, #007AFF 0%, #0056cc 100%) !important;
+    }
+}
+
+/* Дополнительные классы для специальных потребностей */
+.visual-impairment-mode .accessibility-panel * {
+    font-size: 18px !important;
+    line-height: 1.8 !important;
+}
+
+.motor-impairment-mode .accessibility-panel * {
+    min-height: 44px !important;
+    min-width: 44px !important;
+}
+
+.cognitive-impairment-mode .accessibility-panel * {
+    font-family: 'Comic Sans MS', 'Arial Rounded MT Bold', sans-serif !important;
+    line-height: 1.8 !important;
 }
